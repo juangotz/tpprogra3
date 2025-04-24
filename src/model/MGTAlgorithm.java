@@ -1,5 +1,5 @@
 package model;
 
-public class MGTAlgorithm {
-
+public abstract class MGTAlgorithm {
+	
 }

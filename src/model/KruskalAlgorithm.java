@@ -1,5 +1,5 @@
 package model;
 
-public class KruskalAlgorithm {
+public class KruskalAlgorithm extends MGTAlgorithm{
 
 }
