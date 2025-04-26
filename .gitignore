@@ -1,0 +1,44 @@
+# Eclipse files
+.classpath
+.project
+.settings/
+# VSCode files
+.vscode/
+
+# Build folders
+/bin/
+/target/
+/out/
+
+# Maven
+.mvn/
+
+# Gradle
+.gradle/
+/build/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Logs
+*.log
+
+# Java files
+*.class
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# Generated files
+*.war
+*.ear
+*.jar
