@@ -3,84 +3,100 @@ package model;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import algorithm.MergeSort;
 
-public class Graph
-{
-	// Representamos el grafo por su matriz de adyacencia
-	private ArrayList<HashSet<Integer>> neighbors;
+public class Graph{
 	
-	// La cantidad de vertices esta predeterminada desde el constructor
+	// Representamos el grafo por su matriz de adyacencia
+	private ArrayList<HashSet<Edge>>neighbors;
+	
 	public Graph(int vertex)
 	{
-		/*A = new boolean[vertex][vertex];*/
-		neighbors = new ArrayList<HashSet<Integer>>();
-		for (int i = 0; i < vertex; i++) {
-			neighbors.add(new HashSet<Integer>());
+		 neighbors = new ArrayList<>();
+	        for (int i = 0; i < vertex; i++) {
+	            neighbors.add(new HashSet<>());
 		}
 	}
 	
-	// Agregado de aristas
-	public void addEdge(int i, int j, int weight)
+	public void addEdge(int from, int to, int weight)
 	{
-		verifyEdge(i);
-		verifyEdge(j);
-		verifyDistinctNodes(i, j);
+		verifyEdge(from);
+		verifyEdge(to);
+		verifyDistinctNodes(from, to);
+		
+		Edge edge = new Edge(from, to, weight);
+		Edge reverse = new Edge(to, from, weight);
 
-		neighbors.get(i).add(j);
-		neighbors.get(j).add(i);
+		neighbors.get(from).add(edge);
+	    neighbors.get(to).add(reverse); 
 		
 	}
 
-	// Eliminacion de aristas
+	/*
 	public void deleteEdge(int i, int j)
 	{
 		verifyEdge(i);
 		verifyEdge(j);
 		verifyDistinctNodes(i, j);
-		
-		/*
-		A[i][j] = false;
-		A[j][i] = false;
-		*/
 
 		neighbors.get(i).remove(j);
 		neighbors.get(j).remove(i);
 	}
-
-	// Informa si existe la arista especificada
-	public boolean edgeExists(int i, int j)
+*/
+	public boolean edgeExists(int from, int to)
 	{
-		verifyEdge(i);
-		verifyEdge(j);
-		verifyDistinctNodes(i, j);
+		verifyEdge(from);
+		verifyEdge(to);
+		verifyDistinctNodes(from, to);
 
-		//return A[i][j];
-		
-		return neighbors.get(i).contains(j);
+		for(Edge edge : neighbors.get(from)) {
+			if(edge.getTo() == to) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	// Cantidad de vertices
 	public int size()
 	{
 		return neighbors.size();
 	}
 	
-	// Vecinos de un vertice
-	public Set<Integer> getNeighbors(int i)
-	{
-		verifyEdge(i);
-		
-		Set<Integer> ret = new HashSet<Integer>();
-		for(int j = 0; j < size(); ++j) if( i != j )
-		{
-			if( this.edgeExists(i,j) )
-				ret.add(j);
-		}
-		
-		return ret;		
+	public Set<Integer> getNeighbors(int i) {
+        verifyEdge(i);
+        
+        Set<Integer> ret = new HashSet<>();
+        for(Edge edge : neighbors.get(i)) {
+        	ret.add(edge.getTo());
+        }
+        return ret;
 	}
 	
-	// Verifica que sea un vertice valido
+	public List<Edge> sortByWeight() {
+	
+		Set<String> seen = new HashSet<>();
+		List<Edge> ret = new ArrayList<>();
+		
+		
+		for (int from = 0; from < neighbors.size(); from++) {
+            for (Edge edge : neighbors.get(from)) {
+            	
+                int to = edge.getTo();
+                String key = Math.min(from, to) + "-" + Math.max(from, to);
+                
+                if (!seen.contains(key)) {
+                    ret.add(edge);
+                    seen.add(key);
+                }
+            }
+        }
+		
+		MergeSort.sort(ret, 0, ret.size()-1);
+		return ret;
+	}
+	
+	
 	private void verifyEdge(int i)
 	{
 		if( i < 0 )
@@ -90,7 +106,6 @@ public class Graph
 			throw new IllegalArgumentException("Los vertices deben estar entre 0 y |V|-1: " + i);
 	}
 
-	// Verifica que i y j sean distintos
 	private void verifyDistinctNodes(int i, int j)
 	{
 		if( i == j )
