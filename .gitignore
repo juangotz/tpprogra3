@@ -42,3 +42,7 @@ Thumbs.db
 *.war
 *.ear
 *.jar
+bin/model/Park.class
+bin/model/Park.class
+bin/model/Park.class
+/bin

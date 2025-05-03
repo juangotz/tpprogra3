@@ -21,6 +21,9 @@ public class Main {
 		}
 		
 
+		for (Edge e : mst) {
+			System.out.println(e.getFrom() + "-" + e.getTo());
+		}
 		printNeighborList(g);
 		System.out.println("\n");
 		printNeighborList(MSTgraph);
