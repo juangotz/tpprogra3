@@ -96,7 +96,11 @@ public class Graph{
 		return ret;
 	}
 	
-	
+	public Set<Edge> getEdgesFrom(int node) {
+	    verifyEdge(node);
+	    return neighbors.get(node);
+	}
+
 	private void verifyEdge(int i)
 	{
 		if( i < 0 )
@@ -111,4 +115,6 @@ public class Graph{
 		if( i == j )
 			throw new IllegalArgumentException("No se permiten loops: (" + i + ", " + j + ")");
 	}
+	
+	
 }

@@ -33,6 +33,10 @@ public class Kruskal {
 	            break;
 	        }
 	    }
+	    
+	    if (result.size() != n - 1) {
+	        throw new IllegalStateException("El grafo no es conexo: no se puede construir un MST completo.");
+	    }
 	    return result;
 	}
 		 
