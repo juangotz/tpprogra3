@@ -14,13 +14,27 @@ public class Park {
 		stations = new HashMap<Integer, Station>();
 	}
 	
+	public void loadStations() { //Estaciones template por propositos de testeo. **ELIMINAR LUEGO**
+		Station a = new Station (-34.521, -58.7008, 0, "Estacion Rivadavia");
+		stations.put(a.getNodeIndex(), a);
+		Station b = new Station (-34.519, -58.7000, 1, "Estación Perón");
+		stations.put(b.getNodeIndex(), b);
+		Station c = new Station (-34.518, -58.7021, 2, "Estación Teloresumoasinomás");
+		stations.put(c.getNodeIndex(), c);
+		Station d = new Station (-34.516, -58.7012, 3, "Estacion Envido");
+		stations.put(d.getNodeIndex(), d);
+	}
+	
 	public void loadStations(ArrayList<Station> stationList) {
 		for (Station s : stationList) {
 			this.stations.put(s.getNodeIndex(), s);
 		}
 	}
 	
-	public Triplet<Double, Double, String> getStationData(Object x) {
+	public Triplet<Double, Double, String> getStationData(int x) {
+		if (!stations.containsKey(x)) {
+			throw new IllegalArgumentException("STATION NOT FOUND");
+		}
 		Station aux = stations.get(x);
 		Triplet<Double, Double, String> data = new Triplet<Double, Double, String>(aux.getXCoordinate(),aux.getYCoordinate(),aux.getName());
 		return data; //X = X coordinate, Y = Y Coordinate, Z = Name;

@@ -123,6 +123,13 @@ public class MapViewer
 		
 	}
 	
+	private void drawStationInMap(int index) {
+		Triplet<Double, Double, String> stationData = controller.getStationData(index);
+		Coordinate stationCoordinate = getCoordinateFromTriplet(stationData);
+		String stationName = stationData.getZ();
+		_map.addMapMarker(new MapMarkerDot(stationName, stationCoordinate));
+	}
+	
 	private void placePathsOnMap(ArrayList<Triplet<Integer, Integer, Integer>> dataTriplet) {
 		for(Triplet<Integer, Integer, Integer> t : dataTriplet) {
 			Triplet<Double, Double, String> stationXData = controller.getStationData(t.getX());
@@ -132,39 +139,29 @@ public class MapViewer
 			MapPolygonImpl polygon = new MapPolygonImpl(stationsCoordinates);
 			_map.addMapPolygon(polygon);
 			setAppropiatePolygonColor(polygon, t.getZ());
-			System.out.println();
 		}
 		
-	}
-	
-	private void drawStationInMap(int index) {
-		Triplet<Double, Double, String> stationData = controller.getStationData(index);
-		Coordinate stationCoordinate = getCoordinateFromTriplet(stationData);
-		String stationName = stationData.getZ();
-		_map.addMapMarker(new MapMarkerDot(stationName, stationCoordinate));
 	}
 
 	private void setAppropiatePolygonColor(MapPolygonImpl polygon, int z) {
 		if (z>=0 && z<=5) {
-			polygon.setColor(Color.GREEN);
-			polygon.setBackColor(Color.GREEN);
-			polygon.setStroke(new BasicStroke(3));
+			colorPolygon(polygon, Color.GREEN);
 		}
 		if (z>5 && z<=10) {
-			polygon.setColor(Color.YELLOW);
-			polygon.setBackColor(Color.YELLOW);
-			polygon.setStroke(new BasicStroke(3));
+			colorPolygon(polygon, Color.YELLOW);
 		}
 		if (z>10 && z<=15) {
-			polygon.setColor(Color.ORANGE);
-			polygon.setBackColor(Color.ORANGE);
-			polygon.setStroke(new BasicStroke(3));
+			colorPolygon(polygon, Color.ORANGE);
 		}
 		if (z>15) {
-			polygon.setColor(Color.RED);
-			polygon.setBackColor(Color.RED);
-			polygon.setStroke(new BasicStroke(3));
+			colorPolygon(polygon, Color.RED);
 		}
+	}
+
+	private void colorPolygon(MapPolygonImpl polygon, Color color) {
+		polygon.setColor(color);
+		polygon.setBackColor(color);
+		polygon.setStroke(new BasicStroke(3));
 	}
 	
 	private ArrayList<Coordinate> getCoordinatesForPolygon(Triplet<Double, Double, String> stationAData,
@@ -191,6 +188,5 @@ public class MapViewer
 		return new Coordinate(stationAData.getY(),stationAData.getX());
 	}
 
-	
 }
 	
