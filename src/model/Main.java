@@ -3,6 +3,7 @@ package model;
 import java.util.List;
 
 import algorithm.Kruskal;
+import algorithm.Prim;
 
 public class Main {
 
@@ -14,12 +15,12 @@ public class Main {
 		g.addEdge(1, 3, 15);
 		g.addEdge(2, 3, 4);
 
-		List<Edge> mst = Kruskal.getMST(g);
+		List<Edge> mst = Prim.getMST(g, 4);
 		Graph MSTgraph = new Graph(g.size());
 		for(Edge edge : mst) {
 			MSTgraph.addEdge(edge.getFrom(), edge.getTo(), edge.getWeight());
 		}
-		
+	
 
 		for (Edge e : mst) {
 			System.out.println(e.getFrom() + "-" + e.getTo());

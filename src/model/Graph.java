@@ -9,7 +9,7 @@ import algorithm.MergeSort;
 public class Graph{
 	
 	// Representamos el grafo por su matriz de adyacencia
-	private ArrayList<HashSet<Edge>>neighbors;
+	private ArrayList<HashSet<Edge>> neighbors;
 	
 	public Graph(int vertex)
 	{
@@ -32,18 +32,7 @@ public class Graph{
 	    neighbors.get(to).add(reverse); 
 		
 	}
-
-	/*
-	public void deleteEdge(int i, int j)
-	{
-		verifyEdge(i);
-		verifyEdge(j);
-		verifyDistinctNodes(i, j);
-
-		neighbors.get(i).remove(j);
-		neighbors.get(j).remove(i);
-	}
-*/
+	
 	public boolean edgeExists(int from, int to)
 	{
 		verifyEdge(from);
