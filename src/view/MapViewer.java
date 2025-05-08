@@ -23,6 +23,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
+import javax.swing.JTextField;
+import java.awt.Font;
 
 public class MapViewer 
 {
@@ -32,8 +34,11 @@ public class MapViewer
 	private JPanel controlPanel;
 	private JMapViewer _map;
 	private MapController controller = new MapController();
-
+	private JTextField txtTimer;
+	private JButton primButton;
 	private JButton kruskalButton;
+	private JButton clearButton;
+	private boolean arePathsDrawn;
 
 
 	/**
@@ -67,7 +72,7 @@ public class MapViewer
 	 */
 	private void initialize() 
 	{
-		controller.loadTestPark();
+		controller.loadPark();
 		frame = new JFrame();
 		frame.setBounds(100, 100, 725, 506);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -89,23 +94,75 @@ public class MapViewer
 		mapPanel.add(_map);
 		
 		kruskalButton = new JButton("Hacer AGM con Kruskal");
-		kruskalButton.setBounds(10, 11, 195, 23);
+		kruskalButton.setBounds(0, 70, 195, 23);
 		kruskalButton.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				doMSTwithKruskal();
+				if(!arePathsDrawn) {
+					doMSTwithKruskal();
+				} else {
+					JOptionPane.showMessageDialog(_map, "Caminos ya estan dibujados. Borrar primero.", "ERROR", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		controlPanel.add(kruskalButton);
 		
+		primButton = new JButton("Hacer AGM con Prim");
+		primButton.setBounds(0, 11, 195, 23);
+		primButton.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				if(!arePathsDrawn) {
+					doMSTwithPrim();
+				} else {
+					JOptionPane.showMessageDialog(_map, "Caminos ya estan dibujados. Borrar primero.", "ERROR", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		controlPanel.add(primButton);
+		
+		clearButton = new JButton("Borrar Mapa");
+		clearButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(!arePathsDrawn) {
+					JOptionPane.showMessageDialog(_map, "No existe camino para borrar.", "ERROR", JOptionPane.ERROR_MESSAGE);
+				} else
+				clearMap();
+			}
+		});
+		clearButton.setBounds(0, 130, 195, 23);
+		controlPanel.add(clearButton);
+		
+		txtTimer = new JTextField();
+		txtTimer.setFont(new Font("Tahoma", Font.BOLD, 9));
+		txtTimer.setText("Tiempo Total Algoritmo: x sec");
+		txtTimer.setBounds(10, 233, 185, 42);
+		controlPanel.add(txtTimer);
+		txtTimer.setColumns(10);
+		txtTimer.setVisible(false);
+		
 	}
 	
 	private void doMSTwithKruskal() {
+		long start = System.currentTimeMillis();
 		ArrayList<Triplet<Integer, Integer, Integer>> aux = controller.doMSTWithKruskal();
 		placeStationsOnMap(aux);
 		placePathsOnMap(aux);
-		
+		arePathsDrawn = true;
+		long finish = System.currentTimeMillis();
+		placeAlgorithmTimeOnScreen(start, finish);
+	}
+
+	private void doMSTwithPrim() {
+		long start = System.currentTimeMillis();
+		ArrayList<Triplet<Integer, Integer, Integer>> aux = controller.doMSTWithKruskal();
+		placeStationsOnMap(aux);
+		placePathsOnMap(aux);
+		arePathsDrawn = true;
+		long finish = System.currentTimeMillis();
+		placeAlgorithmTimeOnScreen(start, finish);
 	}
 
 	private void placeStationsOnMap(ArrayList<Triplet<Integer, Integer, Integer>> dataTriplet) {
@@ -187,32 +244,21 @@ public class MapViewer
 	private Coordinate getCoordinateFromTriplet(Triplet<Double, Double, String> stationAData) {
 		return new Coordinate(stationAData.getY(),stationAData.getX());
 	}
-
-
-
-	/**
-	 * Open the window.
-	 */
-	public void open() {
-		Display display = Display.getDefault();
-		createContents();
-		shell.open();
-		shell.layout();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
-			}
-		}
+	
+	private void placeAlgorithmTimeOnScreen(long start, long finish) {
+		System.out.println("Start - " + start);
+		System.out.println("Finish - " + finish);
+		double time = (finish - start) / 1000.0;
+		txtTimer.setText("Tiempo Total Algoritmo: " + time + "secs.");
+		txtTimer.setVisible(true);
+		
 	}
-
-	/**
-	 * Create contents of the window.
-	 */
-	protected void createContents() {
-		shell = new Shell();
-		shell.setSize(450, 300);
-		shell.setText("SWT Application");
-
+	
+	private void clearMap() {
+		_map.removeAllMapMarkers();
+		_map.removeAllMapPolygons();
+		arePathsDrawn = false;
+		txtTimer.setVisible(false);
 	}
-
 }
+	

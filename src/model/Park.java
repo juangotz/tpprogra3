@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import algorithm.Kruskal;
+import algorithm.Prim;
 
 public class Park {
 	HashMap<Integer, Station> stations;
@@ -12,9 +13,16 @@ public class Park {
 	
 	public Park() {
 		stations = new HashMap<Integer, Station>();
+		this.loadStations();
+		this.loadGraph();
 	}
 	
-	public void loadStations() { //Estaciones template por propositos de testeo. **ELIMINAR LUEGO**
+	public Park(ArrayList<Station> stationList) {
+		stations = new HashMap<Integer, Station>();
+		this.loadStations(stationList);
+	}
+	
+	private void loadStations() { //Estaciones template por propositos de testeo.
 		Station a = new Station (-34.521, -58.7008, 0, "Estacion Rivadavia");
 		stations.put(a.getNodeIndex(), a);
 		Station b = new Station (-34.519, -58.7000, 1, "Estación Perón");
@@ -23,12 +31,6 @@ public class Park {
 		stations.put(c.getNodeIndex(), c);
 		Station d = new Station (-34.516, -58.7012, 3, "Estacion Envido");
 		stations.put(d.getNodeIndex(), d);
-	}
-	
-	public void loadStations(ArrayList<Station> stationList) {
-		for (Station s : stationList) {
-			this.stations.put(s.getNodeIndex(), s);
-		}
 	}
 	
 	public Triplet<Double, Double, String> getStationData(int x) {
@@ -41,16 +43,31 @@ public class Park {
 	}
 	
 	public ArrayList<Triplet<Integer,Integer,Integer>> doMSTWithKruskal() {
-		ArrayList<Triplet<Integer,Integer,Integer>> tripletList = new ArrayList<Triplet<Integer,Integer,Integer>>();
 		List<Edge> mst = Kruskal.getMST(this.graph);
+		return obtainEdgesData(mst);
+	}
+	
+	public ArrayList<Triplet<Integer,Integer,Integer>> doMSTWithPrim() {
+		List<Edge> mst = Prim.getMST(this.graph, 0);
+		return obtainEdgesData(mst);
+	}
+
+	private ArrayList<Triplet<Integer, Integer, Integer>> obtainEdgesData(List<Edge> mst) {
+		ArrayList<Triplet<Integer,Integer,Integer>> tripletList = new ArrayList<Triplet<Integer,Integer,Integer>>();
 		for(Edge edge : mst) {
 			Triplet<Integer, Integer, Integer> trip = new Triplet<>(edge.getFrom(), edge.getTo(), edge.getWeight());
 			tripletList.add(trip); //X=Station A, Y = Station B, Z = Weight
 		}
 		return tripletList;
 	}
+	
+	private void loadStations(ArrayList<Station> stationList) {
+		for (Station s : stationList) {
+			this.stations.put(s.getNodeIndex(), s);
+		}
+	}
 
-	public void loadTestGraph() { //Por propositos de testeo. **ELIMINAR LUEGO**
+	private void loadGraph() { 
 		graph = new Graph(4);
 		graph.addEdge(0, 1, 10);
 		graph.addEdge(0, 2, 6);

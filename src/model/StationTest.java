@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-public class ParkTest {
+public class StationTest {
 	
 	 @Test(expected = IllegalArgumentException.class)
 	 public void stationNotFound() {
@@ -14,13 +14,12 @@ public class ParkTest {
 	 }
 	 @Test
 	 public void foundStation() {
-		Park p = new Park();
-		generateTemplateStations(p);
+		Park p = generateTestPark();
 		Triplet<Double, Double, String> test = p.getStationData(1);
 		assertTrue(TripletContentsNotNull(test)==true);
 	 }
 
-	private void generateTemplateStations(Park p) {
+	private Park generateTestPark() {
 		ArrayList<Station> stations = new ArrayList<Station>();
 		Station a = new Station (-34.521, -58.7008, 0, "A");
 		Station b = new Station (-34.519, -58.7000, 1, "B");
@@ -30,7 +29,7 @@ public class ParkTest {
 		stations.add(b);
 		stations.add(c);
 		stations.add(d);
-		p.loadStations(stations);
+		return new Park(stations);
 	}
 	
 	private boolean TripletContentsNotNull(Triplet<Double, Double, String> t) {

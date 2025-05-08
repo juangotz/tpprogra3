@@ -7,6 +7,12 @@ public class Station {
 	private String name;
 	
 	public Station (double xCoord, double yCoord, int nodeIndex, String name) {
+		if (nodeIndex < 0) {
+			throw new IllegalArgumentException("Argumento invalido: Index no debe ser negativo!");
+		}
+		if (name == null) {
+			throw new NullPointerException("Argumento invalido: Nombre no puede ser null!");
+		}
 		this.xCoordinate = xCoord;
 		this.yCoordinate = yCoord;
 		this.nodeIndex = nodeIndex;

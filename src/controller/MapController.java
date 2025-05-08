@@ -13,18 +13,21 @@ import model.Triplet;
 public class MapController {
 	private Park p;
 	
+	public void loadPark() {
+		p = new Park();
+	}
+	
 	public ArrayList<Triplet<Integer,Integer,Integer>> doMSTWithKruskal() {
 		return p.doMSTWithKruskal();
+	}
+	
+	public ArrayList<Triplet<Integer,Integer,Integer>> doMSTWithPrim() {
+		return p.doMSTWithPrim();
 	}
 	
 	public Triplet<Double, Double, String> getStationData(int x) {
 		return p.getStationData(x);
 		
 	}
-	
-	public void loadTestPark() { //Por propositos de testeo. **ELIMINAR LUEGO**
-		p = new Park();
-		p.loadStations();
-		p.loadTestGraph();
-	}
+
 }
