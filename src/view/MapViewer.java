@@ -88,7 +88,7 @@ public class MapViewer
 		controlPanel.setLayout(null);
 		
 		_map = new JMapViewer();
-		_map.setDisplayPosition(new Coordinate(-58.7008, -34.521), 15);
+		_map.setDisplayPosition(new Coordinate(-58.7008, -34.517), 15);
 		_map.setScrollWrapEnabled(false);
 				
 		mapPanel.add(_map);
@@ -143,26 +143,30 @@ public class MapViewer
 		txtTimer.setColumns(10);
 		txtTimer.setVisible(false);
 		
+		//Hacemos Kruskal y Prim de antemano por temas del compilador de Java.
+		doMSTwithKruskal();
+		clearMap();
+		doMSTwithPrim();
+		clearMap();
+		
 	}
 	
 	private void doMSTwithKruskal() {
-		long start = System.currentTimeMillis();
+		double time = controller.getKruskalTime();
 		ArrayList<Triplet<Integer, Integer, Integer>> aux = controller.doMSTWithKruskal();
 		placeStationsOnMap(aux);
 		placePathsOnMap(aux);
 		arePathsDrawn = true;
-		long finish = System.currentTimeMillis();
-		placeAlgorithmTimeOnScreen(start, finish);
+		placeAlgorithmTimeOnScreen(time);
 	}
 
 	private void doMSTwithPrim() {
-		long start = System.currentTimeMillis();
-		ArrayList<Triplet<Integer, Integer, Integer>> aux = controller.doMSTWithKruskal();
+		double time = controller.getPrimTime();
+		ArrayList<Triplet<Integer, Integer, Integer>> aux = controller.doMSTWithPrim();
 		placeStationsOnMap(aux);
 		placePathsOnMap(aux);
 		arePathsDrawn = true;
-		long finish = System.currentTimeMillis();
-		placeAlgorithmTimeOnScreen(start, finish);
+		placeAlgorithmTimeOnScreen(time);
 	}
 
 	private void placeStationsOnMap(ArrayList<Triplet<Integer, Integer, Integer>> dataTriplet) {
@@ -245,10 +249,7 @@ public class MapViewer
 		return new Coordinate(stationAData.getY(),stationAData.getX());
 	}
 	
-	private void placeAlgorithmTimeOnScreen(long start, long finish) {
-		System.out.println("Start - " + start);
-		System.out.println("Finish - " + finish);
-		double time = (finish - start) / 1000.0;
+	private void placeAlgorithmTimeOnScreen(Double time) {
 		txtTimer.setText("Tiempo Total Algoritmo: " + time + "secs.");
 		txtTimer.setVisible(true);
 		

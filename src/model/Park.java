@@ -42,6 +42,10 @@ public class Park {
 		return data; //X = X coordinate, Y = Y Coordinate, Z = Name;
 	}
 	
+	public Graph getGraph() {
+		return this.graph;
+	}
+	
 	public ArrayList<Triplet<Integer,Integer,Integer>> doMSTWithKruskal() {
 		List<Edge> mst = Kruskal.getMST(this.graph);
 		return obtainEdgesData(mst);
