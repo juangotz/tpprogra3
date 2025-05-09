@@ -13,7 +13,8 @@ import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
 
 import controller.MapController;
-import model.Triplet;
+import model.Edge;
+import model.Station;
 
 import javax.swing.JButton;
 
@@ -23,6 +24,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+
 import javax.swing.JTextField;
 import java.awt.Font;
 
@@ -88,7 +91,7 @@ public class MapViewer
 		controlPanel.setLayout(null);
 		
 		_map = new JMapViewer();
-		_map.setDisplayPosition(new Coordinate(-58.7008, -34.517), 15);
+		_map.setDisplayPosition(new Coordinate(-40.83333333, -71.61666667), 15); // -58.7008, -34.517coordenadas de parque nacional
 		_map.setScrollWrapEnabled(false);
 				
 		mapPanel.add(_map);
@@ -153,7 +156,7 @@ public class MapViewer
 	
 	private void doMSTwithKruskal() {
 		double time = controller.getKruskalTime();
-		ArrayList<Triplet<Integer, Integer, Integer>> aux = controller.doMSTWithKruskal();
+		List<Edge> aux = controller.doMSTWithKruskal();
 		placeStationsOnMap(aux);
 		placePathsOnMap(aux);
 		arePathsDrawn = true;
@@ -162,44 +165,44 @@ public class MapViewer
 
 	private void doMSTwithPrim() {
 		double time = controller.getPrimTime();
-		ArrayList<Triplet<Integer, Integer, Integer>> aux = controller.doMSTWithPrim();
+		List<Edge> aux = controller.doMSTWithPrim();
 		placeStationsOnMap(aux);
 		placePathsOnMap(aux);
 		arePathsDrawn = true;
 		placeAlgorithmTimeOnScreen(time);
 	}
 
-	private void placeStationsOnMap(ArrayList<Triplet<Integer, Integer, Integer>> dataTriplet) {
+	private void placeStationsOnMap(List<Edge> aux) {
 		ArrayList<Integer> addedStations = new ArrayList<Integer>();
-		for (Triplet<Integer, Integer, Integer> t : dataTriplet) {
-			if (!addedStations.contains(t.getX())) {
-				drawStationInMap(t.getX());
-				addedStations.add(t.getX());
+		for (Edge e : aux) {
+			if (!addedStations.contains(e.getFrom())) {
+				drawStationInMap(e.getFrom());
+				addedStations.add(e.getFrom());
 			}
-			if (!addedStations.contains(t.getY())) {
-				drawStationInMap(t.getY());
-				addedStations.add(t.getY());
+			if (!addedStations.contains(e.getTo())) {
+				drawStationInMap(e.getTo());
+				addedStations.add(e.getTo());
 			}
 		}
 		
 	}
 	
 	private void drawStationInMap(int index) {
-		Triplet<Double, Double, String> stationData = controller.getStationData(index);
-		Coordinate stationCoordinate = getCoordinateFromTriplet(stationData);
-		String stationName = stationData.getZ();
+		Station stationData = controller.getStationData(index);
+		Coordinate stationCoordinate = getCoordinateFromStation(stationData);
+		String stationName = stationData.getName();
 		_map.addMapMarker(new MapMarkerDot(stationName, stationCoordinate));
 	}
 	
-	private void placePathsOnMap(ArrayList<Triplet<Integer, Integer, Integer>> dataTriplet) {
-		for(Triplet<Integer, Integer, Integer> t : dataTriplet) {
-			Triplet<Double, Double, String> stationXData = controller.getStationData(t.getX());
-			Triplet<Double, Double, String> stationYData = controller.getStationData(t.getY());
+	private void placePathsOnMap(List <Edge> dataEdges) {
+		for(Edge e : dataEdges) {
+			Station stationXData = controller.getStationData(e.getFrom());
+			Station stationYData = controller.getStationData(e.getTo());
 			ArrayList<Coordinate> stationsCoordinates = getCoordinatesForPolygon(stationXData, stationYData);
 			
 			MapPolygonImpl polygon = new MapPolygonImpl(stationsCoordinates);
 			_map.addMapPolygon(polygon);
-			setAppropiatePolygonColor(polygon, t.getZ());
+			setAppropiatePolygonColor(polygon, e.getWeight());
 		}
 		
 	}
@@ -225,11 +228,11 @@ public class MapViewer
 		polygon.setStroke(new BasicStroke(3));
 	}
 	
-	private ArrayList<Coordinate> getCoordinatesForPolygon(Triplet<Double, Double, String> stationAData,
-			Triplet<Double, Double, String> stationBData) {
+	private ArrayList<Coordinate> getCoordinatesForPolygon(Station stationAData,
+			Station stationBData) {
 		ArrayList<Coordinate> coordList = new ArrayList<Coordinate>();
-		Coordinate stationA = getCoordinateFromTriplet(stationAData);
-		Coordinate stationB = getCoordinateFromTriplet(stationBData);
+		Coordinate stationA = getCoordinateFromStation(stationAData);
+		Coordinate stationB = getCoordinateFromStation(stationBData);
 		Coordinate stationAB = getMiddleCoordinate(stationA, stationB); //Necesario para dibujar la linea.
 		coordList.add(stationA);
 		coordList.add(stationB);
@@ -245,8 +248,8 @@ public class MapViewer
 		return new Coordinate (addY, addX);
 	}
 
-	private Coordinate getCoordinateFromTriplet(Triplet<Double, Double, String> stationAData) {
-		return new Coordinate(stationAData.getY(),stationAData.getX());
+	private Coordinate getCoordinateFromStation(Station stationAData) {
+		return new Coordinate(stationAData.getXCoordinate(),stationAData.getYCoordinate());
 	}
 	
 	private void placeAlgorithmTimeOnScreen(Double time) {

@@ -9,28 +9,26 @@ import model.Edge;
 import model.Graph;
 import model.Park;
 import model.Station;
-import model.Triplet;
 
 public class MapController {
 	private Park p;
 	private AlgorithmTimer t = new AlgorithmTimer();
 	
 	public void loadPark() {
-		p = new Park();
+	    p = new Park("src/model/mapa.xml");
 	}
 	
-	public ArrayList<Triplet<Integer,Integer,Integer>> doMSTWithKruskal() {
-		return p.doMSTWithKruskal();
-	}
+    public List<Edge> doMSTWithKruskal() {
+        return p.doMSTWithKruskal();
+    }
 	
-	public ArrayList<Triplet<Integer,Integer,Integer>> doMSTWithPrim() {
-		return p.doMSTWithPrim();
-	}
+    public List<Edge> doMSTWithPrim() {
+        return p.doMSTWithPrim();
+    }
 	
-	public Triplet<Double, Double, String> getStationData(int x) {
-		return p.getStationData(x);
-		
-	}
+    public Station getStationData(int x) {
+        return p.getStationData(x);
+    }
 	
 	public double getKruskalTime() {
 		return t.getKruskalTime(p.getGraph());

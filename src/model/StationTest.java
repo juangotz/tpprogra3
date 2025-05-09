@@ -9,14 +9,14 @@ public class StationTest {
 	
 	 @Test(expected = IllegalArgumentException.class)
 	 public void stationNotFound() {
-		 Park p = new Park(); //Stations vacio.
-		 Triplet<Double, Double, String> test = p.getStationData(1);
+		 Park p = new Park("src/model/mapa.xml"); //Stations vacio.
+		Station s= p.getStationData(1);
 	 }
 	 @Test
 	 public void foundStation() {
 		Park p = generateTestPark();
-		Triplet<Double, Double, String> test = p.getStationData(1);
-		assertTrue(TripletContentsNotNull(test)==true);
+		Station s = p.getStationData(1);
+		assertTrue(stationFieldsNotNull(s)==true);
 	 }
 
 	private Park generateTestPark() {
@@ -32,7 +32,7 @@ public class StationTest {
 		return new Park(stations);
 	}
 	
-	private boolean TripletContentsNotNull(Triplet<Double, Double, String> t) {
-		return t.getX()!=null && t.getY()!=null && t.getZ()!=null;
+	private boolean stationFieldsNotNull(Station s) {
+		return s.getName() != null;
 	}
 }
