@@ -1,0 +1,61 @@
+<mapa>
+	<focusCoordinate>
+		<lat>-40.83333333</lat>
+		<lon>-71.61666667</lon>
+	</focusCoordinate>
+	
+	<stations>
+		<station>
+            		<lat>-40.83583333</lat>
+            		<lon>-71.61644167</lon>
+            		<id>0</id>
+            		<name>Estacion Rivadavia</name>
+        	</station>
+        	<station>
+            		<lat>-40.83383333</lat>
+            		<lon>-71.61564167</lon>
+            		<id>1</id>
+            		<name>Estación Perón</name>
+        	</station>
+        	<station>
+            		<lat>-40.83283333</lat>
+            		<lon>-71.61774167</lon>
+            		<id>2</id>
+            		<name>Estación Teloresumoasinomás</name>
+        	</station>
+        	<station>
+            		<lat>-40.83083333</lat>
+            		<lon>-71.61664167</lon>
+            		<id>3</id>
+            		<name>Estación Envido</name>
+        	</station>
+    	</stations>
+
+	<edges>
+        	<edge>
+            		<from>0</from>
+            		<to>1</to>
+            		<weight>10</weight>
+        	</edge>
+        	<edge>
+           		<from>0</from>
+            		<to>2</to>
+            		<weight>6</weight>
+        	</edge>
+        	<edge>
+            		<from>0</from>
+            		<to>3</to>
+            		<weight>5</weight>
+        	</edge>
+        	<edge>
+            		<from>1</from>
+            		<to>3</to>
+            		<weight>15</weight>
+        	</edge>
+        	<edge>
+            		<from>2</from>
+            		<to>3</to>
+            		<weight>4</weight>
+        	</edge>
+    	</edges>
+</mapa>

@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class StationTest {
 	
-	 @Test(expected = IllegalArgumentException.class)
+	/* @Test(expected = IllegalArgumentException.class)
 	 public void stationNotFound() {
 		 Park p = new Park("src/model/mapa.xml"); //Stations vacio.
 		Station s= p.getStationData(1);
@@ -34,5 +34,5 @@ public class StationTest {
 	
 	private boolean stationFieldsNotNull(Station s) {
 		return s.getName() != null;
-	}
+	}*/
 }

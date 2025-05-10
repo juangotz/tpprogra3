@@ -91,7 +91,7 @@ public class MapViewer
 		controlPanel.setLayout(null);
 		
 		_map = new JMapViewer();
-		_map.setDisplayPosition(new Coordinate(-40.83333333, -71.61666667), 15); // -58.7008, -34.517coordenadas de parque nacional
+		_map.setDisplayPosition(controller.getFocusCoordinate(), 15); // -58.7008, -34.517coordenadas de parque nacional
 		_map.setScrollWrapEnabled(false);
 				
 		mapPanel.add(_map);

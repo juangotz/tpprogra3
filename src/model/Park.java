@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import FileReader.FileReader;
 import algorithm.Kruskal;
 import algorithm.Prim;
 
@@ -11,22 +12,15 @@ public class Park {
 	HashMap<Integer, Station> stations;
 	Graph graph;
 	
-	public Park(String pathToXml) {
-	    FileReader reader = new FileReader(pathToXml);
-	    reader.readFile();
+	public Park(List<Station> stationList, List<Edge> edgeList) {
 	    stations = new HashMap<>();
-	    for (Station s : reader.getStations()) {
+	    for (Station s : stationList) {
 	        stations.put(s.getNodeIndex(), s);
 	    }
 	    graph = new Graph(stations.size());
-	    for (Edge e : reader.getEdges()) {
+	    for (Edge e : edgeList) {
 	        graph.addEdge(e.getFrom(), e.getTo(), e.getWeight());
 	    }
-	}
-	
-	public Park(ArrayList<Station> stationList) {
-		stations = new HashMap<Integer, Station>();
-		this.loadStations(stationList);
 	}
 	
 	public Station getStationData(int x) {
