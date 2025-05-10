@@ -16,18 +16,24 @@ import model.Station;
 public class MapController {
 	private Park p;
 	private AlgorithmTimer t = new AlgorithmTimer();
-	private Coordinate focusCoordinate;
+    private double focusCoordinateLat;
+    private double focusCoordinateLon;
 	
 	public void loadPark() {
 		FileReader reader = new FileReader("src/FileReader/mapa.xml");
 		reader.readFile();
 		p = new Park(reader.getStations(), reader.getEdges());
-		focusCoordinate = reader.getFocusCoordinate(); // nueva parte
+		focusCoordinateLat= reader.getFocusCoordinateLat();
+		focusCoordinateLon= reader.getFocusCoordinateLon();
 	}
 	
-	public Coordinate getFocusCoordinate() {
-	    return focusCoordinate;
-	}
+	public double getFocusCoordinateLat() {
+        return focusCoordinateLat;
+    }
+
+    public double getFocusCoordinateLon() {
+        return focusCoordinateLon;
+    }
 	
     public List<Edge> doMSTWithKruskal() {
         return p.doMSTWithKruskal();

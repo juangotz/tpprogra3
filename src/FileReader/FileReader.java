@@ -14,7 +14,8 @@ public class FileReader {
     private String route;
     private List<Station> stations;
     private List<Edge> edges;
-    private Coordinate focusCoordinate;
+    private double focusCoordinateLat;
+    private double focusCoordinateLon;
 
     public FileReader(String route) {
         this.route = route;
@@ -36,7 +37,9 @@ public class FileReader {
                     double lat = Double.parseDouble(coordElement.getElementsByTagName("lat").item(0).getTextContent());
                     double lon = Double.parseDouble(coordElement.getElementsByTagName("lon").item(0).getTextContent());
                    
-                    focusCoordinate = new Coordinate(lat, lon);
+                    this.focusCoordinateLat=lat;
+                    this.focusCoordinateLon=lon;
+                 
                 }
             }
             
@@ -74,8 +77,12 @@ public class FileReader {
         }
     }
 
-    public Coordinate getFocusCoordinate() {
-        return focusCoordinate;
+    public double getFocusCoordinateLat() {
+        return focusCoordinateLat;
+    }
+
+    public double getFocusCoordinateLon() {
+        return focusCoordinateLon;
     }
     
     public List<Station> getStations() {
