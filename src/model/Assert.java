@@ -9,12 +9,12 @@ import java.util.Set;
 public class Assert
 {
 	// Verifica que sean iguales como conjuntos
-	public static void equalArray(int[] esperado, Set<Integer> obtenido)
+	public static void equalArray(int[] expected, Set<Integer> obtained)
 	{
-		assertEquals(esperado.length, obtenido.size());
+		assertEquals(expected.length, obtained.size());
 		
-		for(int i=0; i<esperado.length; ++i)
-			assertTrue( obtenido.contains(esperado[i]) );
+		for(int i=0; i<expected.length; ++i)
+			assertTrue( obtained.contains(expected[i]) );
 	}
 
 	public static void equalArray(int[] expected, List<Edge> obtained)

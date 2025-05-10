@@ -3,8 +3,6 @@ package model;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import model.Assert;
-
 public class GraphNeighborTest
 {
 	@Test(expected = IllegalArgumentException.class)

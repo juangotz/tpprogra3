@@ -2,8 +2,6 @@ package model;
 
 import org.junit.Test;
 
-import model.Assert;
-
 public class SortByWeightTest {
 
 	@Test

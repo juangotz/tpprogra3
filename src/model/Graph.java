@@ -11,10 +11,10 @@ public class Graph{
 	// Representamos el grafo por su matriz de adyacencia
 	private ArrayList<HashSet<Edge>> neighbors;
 	
-	public Graph(int vertex)
+	public Graph(int nodes)
 	{
 		 neighbors = new ArrayList<>();
-	        for (int i = 0; i < vertex; i++) {
+	        for (int i = 0; i < nodes; i++) {
 	            neighbors.add(new HashSet<>());
 		}
 	}

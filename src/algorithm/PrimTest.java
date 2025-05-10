@@ -1,6 +1,5 @@
 package algorithm;
 
-import algorithm.Prim;
 import model.Edge;
 import model.Graph;
 import org.junit.Test;
