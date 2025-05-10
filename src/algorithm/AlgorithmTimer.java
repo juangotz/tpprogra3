@@ -6,7 +6,7 @@ public class AlgorithmTimer {
 
 	public double getKruskalTime(Graph graph) {
 		long start = System.currentTimeMillis();
-		for (int i = 0; i <50000; i++) { // Para medir el tiempo.
+		for (int i = 0; i <50000; i++) {
 			Kruskal.getMST(graph);
 		}
 		long finish = System.currentTimeMillis();
@@ -15,7 +15,7 @@ public class AlgorithmTimer {
 
 	public double getPrimTime(Graph graph) {
 		long start = System.currentTimeMillis();
-		for (int i = 0; i <50000; i++) { // Para medir el tiempo.
+		for (int i = 0; i <50000; i++) {
 			Prim.getMST(graph, 0);
 		}
 		long finish = System.currentTimeMillis();

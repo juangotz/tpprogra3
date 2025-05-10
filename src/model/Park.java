@@ -1,10 +1,8 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import FileReader.FileReader;
 import algorithm.Kruskal;
 import algorithm.Prim;
 
@@ -13,6 +11,7 @@ public class Park {
 	Graph graph;
 	
 	public Park(List<Station> stationList, List<Edge> edgeList) {
+		verifyValidParameters(stationList, edgeList);
 	    stations = new HashMap<>();
 	    for (Station s : stationList) {
 	        stations.put(s.getNodeIndex(), s);
@@ -25,7 +24,7 @@ public class Park {
 	
 	public Station getStationData(int x) {
 		if (!stations.containsKey(x)) {
-			throw new IllegalArgumentException("STATION NOT FOUND");
+			throw new IllegalArgumentException("Estacion no encontrada");
 		}
 		return stations.get(x);
 	}
@@ -42,9 +41,12 @@ public class Park {
 		return Prim.getMST(this.graph, 0);
 	}
 	
-	private void loadStations(ArrayList<Station> stationList) {
-		for (Station s : stationList) {
-			this.stations.put(s.getNodeIndex(), s);
+	private void verifyValidParameters(List<Station> stationList, List<Edge> edgeList) {
+		if(stationList.isEmpty()) {
+			throw new IllegalArgumentException ("Parque debe contener estaciones");
+		}
+		if (edgeList.isEmpty()) {
+			throw new IllegalArgumentException ("Grafo debe ser conexo. Por ende, debe contener aristas");
 		}
 	}
 

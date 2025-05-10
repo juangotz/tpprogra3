@@ -90,11 +90,15 @@ public class MapViewer
 		frame.getContentPane().add(controlPanel);		
 		controlPanel.setLayout(null);
 		
+		
+		//Mapa y su foco.
 		_map = new JMapViewer();
 		_map.setDisplayPosition(new Coordinate(controller.getFocusCoordinateLat(),controller.getFocusCoordinateLon()),15);
 		_map.setScrollWrapEnabled(false);
 				
 		mapPanel.add(_map);
+		
+		//Boton para hacer AGM con Kruskal
 		
 		kruskalButton = new JButton("Hacer AGM con Kruskal");
 		kruskalButton.setBounds(0, 70, 195, 23);
@@ -111,6 +115,8 @@ public class MapViewer
 		});
 		controlPanel.add(kruskalButton);
 		
+		//Boton para hacer AGM con Prim
+		
 		primButton = new JButton("Hacer AGM con Prim");
 		primButton.setBounds(0, 11, 195, 23);
 		primButton.addActionListener(new ActionListener() 
@@ -125,6 +131,8 @@ public class MapViewer
 			}
 		});
 		controlPanel.add(primButton);
+		
+		//Boton para Borrar mapa.
 		
 		clearButton = new JButton("Borrar Mapa");
 		clearButton.addActionListener(new ActionListener() {

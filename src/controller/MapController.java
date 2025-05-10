@@ -1,38 +1,30 @@
 package controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.openstreetmap.gui.jmapviewer.Coordinate;
-
 import FileReader.FileReader;
-import algorithm.Kruskal;
 import algorithm.AlgorithmTimer;
 import model.Edge;
-import model.Graph;
 import model.Park;
 import model.Station;
 
 public class MapController {
 	private Park p;
 	private AlgorithmTimer t = new AlgorithmTimer();
-    private double focusCoordinateLat;
-    private double focusCoordinateLon;
+	private FileReader reader;
 	
 	public void loadPark() {
-		FileReader reader = new FileReader("src/FileReader/mapa.xml");
+		reader = new FileReader("src/FileReader/mapa.xml");
 		reader.readFile();
 		p = new Park(reader.getStations(), reader.getEdges());
-		focusCoordinateLat= reader.getFocusCoordinateLat();
-		focusCoordinateLon= reader.getFocusCoordinateLon();
 	}
 	
 	public double getFocusCoordinateLat() {
-        return focusCoordinateLat;
+        return reader.getFocusCoordinateLat();
     }
 
     public double getFocusCoordinateLon() {
-        return focusCoordinateLon;
+        return reader.getFocusCoordinateLon();
     }
 	
     public List<Edge> doMSTWithKruskal() {
