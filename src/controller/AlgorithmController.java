@@ -35,14 +35,4 @@ public class AlgorithmController {
 		return timer.getPrimTime(park.getGraph());
 	}
 
-	public void addStationCoordinates(Coordinate coord) {
-	    // Si necesitas convertir a Coordinate, lo haces aquí
-	    double latitude = coord.getLat();
-	    double longitude = coord.getLon();
-	    int cont=1;
-	    // Usar las coordenadas
-	    Station station = new Station(latitude, longitude,cont,"stacion");
-	    // Guardar estación en el modelo o hacer cualquier lógica adicional
-	    cont++;
-	}
 }

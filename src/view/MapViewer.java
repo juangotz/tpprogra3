@@ -33,27 +33,23 @@ import java.awt.Font;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 public class MapViewer 
 {
-
 	private JFrame frame;
 	private JPanel mapPanel;
 	private JPanel controlPanel;
 	private JMapViewer _map;
 	
 	private JTextField txtTimer;
-	private JTextField txtFrom;
-	private JTextField txtTo;
-	private JTextField txtWeigth;
-	private JTextField txtAddress;
-	private JTextField txtNameStation;
 	
 	private JButton primButton;
 	private JButton kruskalButton;
 	private JButton clearButton;
 	private JButton LoadButton;
-	private JButton LoadStationButton;
+	private JComboBox comboBox;
 	
 	private boolean arePathsDrawn;
 	
@@ -111,26 +107,34 @@ public class MapViewer
 		
 		//Mapa y su foco.
 		_map = new JMapViewer();
-		_map.setDisplayPosition(new Coordinate(-40.83333333,-71.61666667), 15);
+		_map.setDisplayPosition(new Coordinate(-38.416097, -63.616672), 4);
 		mapPanel.add(_map);
 		drawer = new MapDrawer(_map);
 		
-		// En el método initialize, agregar el MouseListener para el mapa
-		_map.addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseClicked(MouseEvent e) {
-		        // Obtener las coordenadas del clic como ICoordinate
-		        Coordinate clickedCoord = (Coordinate) _map.getPosition(e.getPoint());
-		        
-		        // Actualizar los campos de texto con las coordenadas
-		        txtFrom.setText(String.valueOf(clickedCoord.getLat()));
-		        txtTo.setText(String.valueOf(clickedCoord.getLon()));
-
-		        // Llamar al controlador para manejar las coordenadas
-		        if (controller != null) {
-		            controller.addStationCoordinates(clickedCoord);
-		        }
-		    }
+		//Carga el archivo y el grafo original
+		comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Seleccione archivo", "Mapa 1", "Mapa 2"}));
+		comboBox.setToolTipText("");
+		comboBox.setBounds(21, 220, 167, 20);
+		controlPanel.add(comboBox);
+		
+		LoadButton = createButton("Cargar", 215, 220, 85, 20, controlPanel);
+		
+		LoadButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String adress = comboBox.getSelectedItem().toString(); // solo se lee cuando se hace clic
+				if (adress.equals("Seleccione archivo")) {
+					JOptionPane.showMessageDialog(_map, "Seleccione una opcion", "ERROR", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				MapDataLoader loader = new MapDataLoader();
+				Park park = loader.loadPark(adress);
+				drawer.setController(loader);
+				List<Edge> aux = loader.getEdges();
+				_map.setDisplayPosition(new Coordinate(loader.getFocusCoordinateLat(),loader.getFocusCoordinateLon()), 15);
+				drawer.placeStationsOnMap(aux);
+				drawer.placePathsOnMap(aux);
+			}
 		});
 		
 		//Boton para hacer AGM con Kruskal
@@ -195,39 +199,13 @@ public class MapViewer
 			}
 		});
 		
-		LoadButton = createButton("Cargar",215, 220, 85, 20,controlPanel);
-		LoadButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(txtAddress.getText().equals("src/FileReader/mapa.xml")) {
-					
-				} else {
-					JOptionPane.showMessageDialog(_map, "Ingrese un direccion valida ó src/FileReader/mapa.xml", "ERROR", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
-		
-		LoadStationButton=createButton("Cargar estación",95,155,130,20,controlPanel);
-		
-
 		// Etiqueta de texto del tiempo
 		txtTimer = createTextField(62, 375, 195, 40,controlPanel);
 		txtTimer.setEditable(false);
 		txtTimer.setFont(new Font("Tahoma", Font.BOLD, 9));
 		txtTimer.setText("Tiempo Total Algoritmo: x sec");
 		
-		txtFrom = createTextField(20, 125, 70, 20,controlPanel);
-		txtTo = createTextField(117, 125, 70, 20,controlPanel);
-		txtWeigth = createTextField(214, 125, 70, 20,controlPanel);
-		txtAddress = createTextField(21, 220, 167, 20,controlPanel);
-		txtNameStation = createTextField(190, 45, 120, 20,controlPanel);
-		
-		JLabel lblInstructions = createLabel("Cliquee el mapa para las coordenadas",20, 15, 250, 20,new Font("Tahoma", Font.BOLD, 10),controlPanel);
 		JLabel lblGenerateTrails = createLabel("Generar Senderos con \r\nminimo impacto ambiental:",20, 255, 290, 20,new Font("Tahoma", Font.BOLD, 10),controlPanel);	
-		JLabel lblAddstation=createLabel("Ingrese el nombre de la estación",0, 45, 190, 20,new Font("Tahoma", Font.PLAIN, 10),controlPanel);
-		JLabel lblAddEdge = createLabel("Agregar arista:", 20, 75, 100, 20, new Font("Tahoma", Font.BOLD, 10),controlPanel);
-		JLabel lblFrom = createLabel("From",20, 105, 45, 20,new Font("Tahoma", Font.PLAIN, 10),controlPanel);
-		JLabel lblTo= createLabel("To",117, 105, 45, 20,new Font("Tahoma", Font.PLAIN, 10),controlPanel);
-		JLabel lblWeight = createLabel("Peso",214, 105, 45, 20,new Font("Tahoma", Font.PLAIN, 10),controlPanel);
 		JLabel lblAddPark = createLabel("Agregar parque mediante archivo:",20, 190, 250, 20,new Font("Tahoma", Font.BOLD, 10),controlPanel);
 
 		txtTimer.setVisible(false);

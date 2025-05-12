@@ -24,6 +24,10 @@ public class MapDrawer {
 		this.controller = new MapDataLoader();
 	}
 	
+	public void setController(MapDataLoader controller) {
+		this.controller = controller;
+	}
+	
 	protected void placeStationsOnMap(List<Edge> aux) {
 		ArrayList<Integer> addedStations = new ArrayList<Integer>();
 		for (Edge e : aux) {
@@ -108,4 +112,6 @@ public class MapDrawer {
 		_map.removeAllMapMarkers();
 		_map.removeAllMapPolygons();
 	}
+
+	
 }
