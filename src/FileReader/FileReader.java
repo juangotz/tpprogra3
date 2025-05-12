@@ -28,20 +28,6 @@ public class FileReader {
             File f = new File(route);
             Document doc = builder.parse(f);
             
-            NodeList parkCoords = doc.getElementsByTagName("focusCoordinate");
-            if (parkCoords.getLength() > 0) {
-                Node node = parkCoords.item(0);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element coordElement = (Element) node;
-                    double lat = Double.parseDouble(coordElement.getElementsByTagName("lat").item(0).getTextContent());
-                    double lon = Double.parseDouble(coordElement.getElementsByTagName("lon").item(0).getTextContent());
-                   
-                    this.focusCoordinateLat=lat;
-                    this.focusCoordinateLon=lon;
-                 
-                }
-            }
-            
             NodeList stationNodes = doc.getElementsByTagName("station");
             for (int i = 0; i < stationNodes.getLength(); i++) {
                 Node node = stationNodes.item(i);
@@ -74,14 +60,6 @@ public class FileReader {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public double getFocusCoordinateLat() {
-        return focusCoordinateLat;
-    }
-
-    public double getFocusCoordinateLon() {
-        return focusCoordinateLon;
     }
     
     public List<Station> getStations() {

@@ -18,12 +18,12 @@ public class MapDrawer {
 	
 	private MapDataLoader controller; 
 	private JMapViewer _map;
-	
 
 	public MapDrawer(JMapViewer map) {
 		this._map = map;
 		this.controller = new MapDataLoader();
 	}
+	
 	protected void placeStationsOnMap(List<Edge> aux) {
 		ArrayList<Integer> addedStations = new ArrayList<Integer>();
 		for (Edge e : aux) {

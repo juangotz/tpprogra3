@@ -1,9 +1,4 @@
 <mapa>
-	<focusCoordinate>
-		<lat>-40.83333333</lat>
-		<lon>-71.61666667</lon>
-	</focusCoordinate>
-	
 	<stations>
 		<station>
             		<lat>-40.83583333</lat>

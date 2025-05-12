@@ -11,15 +11,19 @@ import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
+import org.openstreetmap.gui.jmapviewer.interfaces.ICoordinate;
 
 import controller.AlgorithmController;
 import controller.MapDataLoader;
 import model.Edge;
+import model.Park;
 import model.Station;
 
 import javax.swing.JButton;
 
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,17 +41,24 @@ public class MapViewer
 	private JPanel mapPanel;
 	private JPanel controlPanel;
 	private JMapViewer _map;
+	
 	private JTextField txtTimer;
+	private JTextField txtFrom;
+	private JTextField txtTo;
+	private JTextField txtWeigth;
+	private JTextField txtAddress;
+	private JTextField txtNameStation;
+	
 	private JButton primButton;
 	private JButton kruskalButton;
 	private JButton clearButton;
+	private JButton LoadButton;
+	private JButton LoadStationButton;
+	
 	private boolean arePathsDrawn;
 	
 	private AlgorithmController controller;
 	private MapDrawer drawer;
-	private JTextField textField;
-	private JTextField textField_1;
-
 
 	/**
 	 * Launch the application.
@@ -80,20 +91,20 @@ public class MapViewer
 	 */
 	private void initialize() 
 	{
-		//controller.loadPark();
+		
 		
 		frame = new JFrame("Generador de senderos con mínimo impacto ambiental");
-		frame.setBounds(100, 100, 725, 506);
+		frame.setBounds(100, 100, 800, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		
 		mapPanel = new JPanel();
-		mapPanel.setBounds(10, 11, 437, 446);
+		mapPanel.setBounds(10, 10, 430, 445);
 		frame.getContentPane().add(mapPanel);
 		
 		controlPanel = new JPanel();
-		controlPanel.setBounds(457, 11, 242, 446);
+		controlPanel.setBounds(456, 10, 320, 445);
 		frame.getContentPane().add(controlPanel);		
 		controlPanel.setLayout(null);
 		
@@ -104,11 +115,27 @@ public class MapViewer
 		mapPanel.add(_map);
 		drawer = new MapDrawer(_map);
 		
+		// En el método initialize, agregar el MouseListener para el mapa
+		_map.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		        // Obtener las coordenadas del clic como ICoordinate
+		        Coordinate clickedCoord = (Coordinate) _map.getPosition(e.getPoint());
+		        
+		        // Actualizar los campos de texto con las coordenadas
+		        txtFrom.setText(String.valueOf(clickedCoord.getLat()));
+		        txtTo.setText(String.valueOf(clickedCoord.getLon()));
+
+		        // Llamar al controlador para manejar las coordenadas
+		        if (controller != null) {
+		            controller.addStationCoordinates(clickedCoord);
+		        }
+		    }
+		});
+		
 		//Boton para hacer AGM con Kruskal
 		
-		kruskalButton = new JButton("Opción 1");
-		kruskalButton.setBounds(20, 273, 195, 23);
-		controlPanel.add(kruskalButton);
+		kruskalButton = createButton("Opción 1",62, 285, 195, 20,controlPanel);
 		kruskalButton.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent arg0) 
@@ -132,9 +159,7 @@ public class MapViewer
 		
 		//Boton para hacer AGM con Prim
 		
-		primButton = new JButton("Opción 2");
-		primButton.setBounds(20, 307, 195, 23);
-		controlPanel.add(primButton);
+		primButton = createButton("Opción 2",62, 315, 195, 20,controlPanel);
 		primButton.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent arg0) 
@@ -157,10 +182,7 @@ public class MapViewer
 		});
 		
 		//Boton para Borrar mapa.
-		
-		clearButton = new JButton("Borrar Mapa");
-		clearButton.setBounds(20, 341, 195, 23);
-		controlPanel.add(clearButton);
+		clearButton = createButton("Borrar Mapa",62, 345, 195, 20,controlPanel);
 		clearButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!arePathsDrawn) {
@@ -173,29 +195,41 @@ public class MapViewer
 			}
 		});
 		
+		LoadButton = createButton("Cargar",215, 220, 85, 20,controlPanel);
+		LoadButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(txtAddress.getText().equals("src/FileReader/mapa.xml")) {
+					
+				} else {
+					JOptionPane.showMessageDialog(_map, "Ingrese un direccion valida ó src/FileReader/mapa.xml", "ERROR", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		
+		LoadStationButton=createButton("Cargar estación",95,155,130,20,controlPanel);
+		
+
 		// Etiqueta de texto del tiempo
-		txtTimer = new JTextField();
+		txtTimer = createTextField(62, 375, 195, 40,controlPanel);
 		txtTimer.setEditable(false);
 		txtTimer.setFont(new Font("Tahoma", Font.BOLD, 9));
 		txtTimer.setText("Tiempo Total Algoritmo: x sec");
-		txtTimer.setBounds(20, 375, 185, 42);
-		controlPanel.add(txtTimer);
-		txtTimer.setColumns(10);
 		
-		JLabel lblNewLabel = new JLabel("Generar Senderos con \r\nminimo impacto ambiental:");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setBounds(20, 239, 195, 23);
-		controlPanel.add(lblNewLabel);
+		txtFrom = createTextField(20, 125, 70, 20,controlPanel);
+		txtTo = createTextField(117, 125, 70, 20,controlPanel);
+		txtWeigth = createTextField(214, 125, 70, 20,controlPanel);
+		txtAddress = createTextField(21, 220, 167, 20,controlPanel);
+		txtNameStation = createTextField(190, 45, 120, 20,controlPanel);
 		
-		textField = new JTextField();
-		textField.setBounds(20, 29, 67, 20);
-		controlPanel.add(textField);
-		textField.setColumns(10);
-		
-		textField_1 = new JTextField();
-		textField_1.setBounds(131, 29, 86, 20);
-		controlPanel.add(textField_1);
-		textField_1.setColumns(10);
+		JLabel lblInstructions = createLabel("Cliquee el mapa para las coordenadas",20, 15, 250, 20,new Font("Tahoma", Font.BOLD, 10),controlPanel);
+		JLabel lblGenerateTrails = createLabel("Generar Senderos con \r\nminimo impacto ambiental:",20, 255, 290, 20,new Font("Tahoma", Font.BOLD, 10),controlPanel);	
+		JLabel lblAddstation=createLabel("Ingrese el nombre de la estación",0, 45, 190, 20,new Font("Tahoma", Font.PLAIN, 10),controlPanel);
+		JLabel lblAddEdge = createLabel("Agregar arista:", 20, 75, 100, 20, new Font("Tahoma", Font.BOLD, 10),controlPanel);
+		JLabel lblFrom = createLabel("From",20, 105, 45, 20,new Font("Tahoma", Font.PLAIN, 10),controlPanel);
+		JLabel lblTo= createLabel("To",117, 105, 45, 20,new Font("Tahoma", Font.PLAIN, 10),controlPanel);
+		JLabel lblWeight = createLabel("Peso",214, 105, 45, 20,new Font("Tahoma", Font.PLAIN, 10),controlPanel);
+		JLabel lblAddPark = createLabel("Agregar parque mediante archivo:",20, 190, 250, 20,new Font("Tahoma", Font.BOLD, 10),controlPanel);
+
 		txtTimer.setVisible(false);
 		
 		/*
@@ -206,9 +240,28 @@ public class MapViewer
 		clearMap();
 		*/
 	}
+	private JLabel createLabel(String text, int x, int y, int width, int height, Font font, JPanel panel) {
+	    JLabel label = new JLabel(text);
+	    label.setFont(font);
+	    label.setBounds(x, y, width, height);
+	    panel.add(label);
+	    return label;
+	}
 	
-
+	private JButton createButton(String text, int x, int y, int width, int height, JPanel panel) {
+	    JButton button = new JButton(text);
+	    button.setBounds(x, y, width, height);
+	    panel.add(button);
+	    return button;
+	}
 	
+	private JTextField createTextField(int x, int y, int width, int height, JPanel panel) {
+	    JTextField textField = new JTextField();
+	    textField.setBounds(x, y, width, height);
+	    textField.setColumns(10);
+	    panel.add(textField);
+	    return textField;
+	}
 	private void placeAlgorithmTimeOnScreen(Double time) {
 		txtTimer.setText("Tiempo Total Algoritmo: " + time + "secs.");
 		txtTimer.setVisible(true);
