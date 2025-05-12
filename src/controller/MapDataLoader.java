@@ -11,16 +11,11 @@ public class MapDataLoader {
 	private Park park;
 	private FileReader reader;
 	
-	public Park loadPark(String data) {
-		if(data.equals("Mapa 1")) {
-			reader = new FileReader("src/FileReader/mapa1.xml");
-		} 
-		if(data.equals("Mapa 2")){
-			reader = new FileReader("src/FileReader/mapa2.xml");
-		}
+	public MapDataLoader(String route) {
+		reader = new FileReader(route);
 		reader.readFile();
 		park = new Park(reader.getStations(), reader.getEdges());
-		return park;
+
 	}
     
 	 public Station getStationData(int x) {
@@ -41,5 +36,9 @@ public class MapDataLoader {
     
     public double getFocusCoordinateLon() {
         return reader.getFocusCoordinateLon();
+    }
+    
+    public int getEnviromentalDamage(List<Edge> aux) {
+    	return park.calculateEnviromentalDamage(aux);
     }
 }

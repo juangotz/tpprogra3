@@ -44,16 +44,18 @@ public class MapViewer
 	private JMapViewer _map;
 	
 	private JTextField txtTimer;
+	private JTextField txtEnviroment;
 	
 	private JButton primButton;
 	private JButton kruskalButton;
-	private JButton clearButton;
-	private JButton LoadButton;
-	private JComboBox comboBox;
+	private JButton restablishButton;
+	private JButton loadButton;
+	private JTextField fileRoute;
 	
 	private boolean arePathsDrawn;
 	
 	private AlgorithmController controller;
+	private MapDataLoader loader;
 	private MapDrawer drawer;
 
 	/**
@@ -95,6 +97,8 @@ public class MapViewer
 		frame.getContentPane().setLayout(null);
 		
 		
+		
+		
 		mapPanel = new JPanel();
 		mapPanel.setBounds(10, 10, 430, 445);
 		frame.getContentPane().add(mapPanel);
@@ -112,34 +116,35 @@ public class MapViewer
 		drawer = new MapDrawer(_map);
 		
 		//Carga el archivo y el grafo original
-		comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Seleccione archivo", "Mapa 1", "Mapa 2"}));
-		comboBox.setToolTipText("");
-		comboBox.setBounds(21, 220, 167, 20);
-		controlPanel.add(comboBox);
+		fileRoute = createTextField(21, 40, 167, 20, controlPanel);
+		fileRoute.setText("src/FileReader/mapa1.xml");
 		
-		LoadButton = createButton("Cargar", 215, 220, 85, 20, controlPanel);
+		loadButton = createButton("Cargar", 215, 40, 85, 20, controlPanel);;
 		
-		LoadButton.addActionListener(new ActionListener() {
+		loadButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String adress = comboBox.getSelectedItem().toString(); // solo se lee cuando se hace clic
-				if (adress.equals("Seleccione archivo")) {
-					JOptionPane.showMessageDialog(_map, "Seleccione una opcion", "ERROR", JOptionPane.ERROR_MESSAGE);
+				String address = fileRoute.getText();
+				if (address.isEmpty()) {
+					JOptionPane.showMessageDialog(_map, "No se puede encontrar ruta", "ERROR", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				MapDataLoader loader = new MapDataLoader();
-				Park park = loader.loadPark(adress);
+				loader = new MapDataLoader(address);
+				controller = new AlgorithmController(address);
 				drawer.setController(loader);
 				List<Edge> aux = loader.getEdges();
 				_map.setDisplayPosition(new Coordinate(loader.getFocusCoordinateLat(),loader.getFocusCoordinateLon()), 15);
 				drawer.placeStationsOnMap(aux);
 				drawer.placePathsOnMap(aux);
+				kruskalButton.setVisible(true);
+				primButton.setVisible(true);
+				restablishButton.setVisible(true);
 			}
 		});
 		
 		//Boton para hacer AGM con Kruskal
 		
-		kruskalButton = createButton("Opción 1",62, 285, 195, 20,controlPanel);
+		kruskalButton = createButton("Opción 1",62, 115, 195, 20,controlPanel);
+		kruskalButton.setVisible(false);	
 		kruskalButton.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent arg0) 
@@ -148,12 +153,14 @@ public class MapViewer
 					
 					List<Edge> aux = controller.doMSTWithKruskal();
 					double time = controller.getKruskalTime();
+					int average = loader.getEnviromentalDamage(aux);
 					
-					drawer.placeStationsOnMap(aux);
+					_map.removeAllMapPolygons();
 					drawer.placePathsOnMap(aux);
 					
 					arePathsDrawn = true;
 					placeAlgorithmTimeOnScreen(time);
+					placeEnviromentalDamageOnScreen(average);
 					
 				} else {
 					JOptionPane.showMessageDialog(_map, "Caminos ya estan dibujados. Borrar primero.", "ERROR", JOptionPane.ERROR_MESSAGE);
@@ -163,7 +170,8 @@ public class MapViewer
 		
 		//Boton para hacer AGM con Prim
 		
-		primButton = createButton("Opción 2",62, 315, 195, 20,controlPanel);
+		primButton = createButton("Opción 2",62, 145, 195, 20,controlPanel);
+		primButton.setVisible(false);
 		primButton.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent arg0) 
@@ -172,12 +180,14 @@ public class MapViewer
 					
 					List<Edge> aux = controller.doMSTWithPrim();
 					double time = controller.getPrimTime();
+					int average = loader.getEnviromentalDamage(aux);
 					
-					drawer.placeStationsOnMap(aux);
+					_map.removeAllMapPolygons();
 					drawer.placePathsOnMap(aux);
 					
 					arePathsDrawn = true;
 					placeAlgorithmTimeOnScreen(time);
+					placeEnviromentalDamageOnScreen(average);
 					
 				} else {
 					JOptionPane.showMessageDialog(_map, "Caminos ya estan dibujados. Borrar primero.", "ERROR", JOptionPane.ERROR_MESSAGE);
@@ -186,37 +196,37 @@ public class MapViewer
 		});
 		
 		//Boton para Borrar mapa.
-		clearButton = createButton("Borrar Mapa",62, 345, 195, 20,controlPanel);
-		clearButton.addActionListener(new ActionListener() {
+		restablishButton = createButton("Restablecer Mapa",62, 175, 195, 20,controlPanel);
+		restablishButton.setVisible(false);
+		restablishButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!arePathsDrawn) {
 					JOptionPane.showMessageDialog(_map, "No existe camino para borrar.", "ERROR", JOptionPane.ERROR_MESSAGE);
 				} else {
-					drawer.clearMap();
-					arePathsDrawn = false;
+					drawer.restablishOriginalPaths();
 					txtTimer.setVisible(false);
+					txtEnviroment.setVisible(false);
+					arePathsDrawn = false;
 				}
 			}
 		});
 		
 		// Etiqueta de texto del tiempo
-		txtTimer = createTextField(62, 375, 195, 40,controlPanel);
+		txtTimer = createTextField(62, 260, 195, 40,controlPanel);
 		txtTimer.setEditable(false);
 		txtTimer.setFont(new Font("Tahoma", Font.BOLD, 9));
 		txtTimer.setText("Tiempo Total Algoritmo: x sec");
-		
-		JLabel lblGenerateTrails = createLabel("Generar Senderos con \r\nminimo impacto ambiental:",20, 255, 290, 20,new Font("Tahoma", Font.BOLD, 10),controlPanel);	
-		JLabel lblAddPark = createLabel("Agregar parque mediante archivo:",20, 190, 250, 20,new Font("Tahoma", Font.BOLD, 10),controlPanel);
-
 		txtTimer.setVisible(false);
 		
-		/*
-		//Hacemos Kruskal y Prim de antemano por temas del compilador de Java.
-		doMSTwithKruskal();
-		clearMap();
-		doMSTwithPrim();
-		clearMap();
-		*/
+		JLabel lblGenerateTrails = createLabel("Generar Senderos con \r\nminimo impacto ambiental:",20, 85, 290, 20,new Font("Tahoma", Font.BOLD, 10),controlPanel);	
+		JLabel lblAddPark = createLabel("Agregar parque mediante archivo:",20, 10, 250, 20,new Font("Tahoma", Font.BOLD, 10),controlPanel);
+
+		
+		txtEnviroment = createTextField(62, 210, 195, 40,controlPanel);
+		txtEnviroment.setEditable(false);
+		txtEnviroment.setFont(new Font("Tahoma", Font.BOLD, 9));
+		txtEnviroment.setText("Impacto Ambiental: Y");
+		txtEnviroment.setVisible(false);
 	}
 	private JLabel createLabel(String text, int x, int y, int width, int height, Font font, JPanel panel) {
 	    JLabel label = new JLabel(text);
@@ -240,9 +250,16 @@ public class MapViewer
 	    panel.add(textField);
 	    return textField;
 	}
+	
 	private void placeAlgorithmTimeOnScreen(Double time) {
 		txtTimer.setText("Tiempo Total Algoritmo: " + time + "secs.");
 		txtTimer.setVisible(true);
+		
+	}
+	
+	private void placeEnviromentalDamageOnScreen(int average) {
+		txtEnviroment.setText("Impacto Ambiental: " + average);
+		txtEnviroment.setVisible(true);
 		
 	}
 }

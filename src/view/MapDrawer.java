@@ -21,7 +21,6 @@ public class MapDrawer {
 
 	public MapDrawer(JMapViewer map) {
 		this._map = map;
-		this.controller = new MapDataLoader();
 	}
 	
 	public void setController(MapDataLoader controller) {
@@ -64,16 +63,16 @@ public class MapDrawer {
 	}
 
 	protected void setAppropiatePolygonColor(MapPolygonImpl polygon, int z) {
-		if (z>=0 && z<=5) {
+		if (z>=1 && z<=3) {
 			colorPolygon(polygon, Color.GREEN);
 		}
-		if (z>5 && z<=10) {
+		if (z>3 && z<=5) {
 			colorPolygon(polygon, Color.YELLOW);
 		}
-		if (z>10 && z<=15) {
+		if (z>5 && z<=8) {
 			colorPolygon(polygon, Color.ORANGE);
 		}
-		if (z>15) {
+		if (z>8) {
 			colorPolygon(polygon, Color.RED);
 		}
 	}
@@ -111,6 +110,12 @@ public class MapDrawer {
 	protected void clearMap() {
 		_map.removeAllMapMarkers();
 		_map.removeAllMapPolygons();
+	}
+	
+	protected void restablishOriginalPaths() {
+		_map.removeAllMapPolygons();
+		List<Edge> aux = controller.getEdges();
+		placePathsOnMap(aux);
 	}
 
 	

@@ -38,19 +38,14 @@ public class Park {
     public List<Edge> doMSTWithPrim() {
         return Prim.getMST(this.graph, 0);
     }
-
-    public void addStation(Station s) {
-        stations.put(s.getNodeIndex(), s);
+    
+    public int calculateEnviromentalDamage(List<Edge> pathData) {
+    	int result = 0;
+    	for (Edge e : pathData) {
+    		result += e.getWeight();
+    	}
+    	return result;
     }
-
-    public List<Station> getStations() {
-        return new ArrayList<>(stations.values());
-    }
-
-    public int nextAvailableStationId() {
-        return stations.size() + 1;
-    }
-
     private void verifyValidParameters(List<Station> stationList, List<Edge> edgeList) {
         if (stationList.isEmpty()) {
             throw new IllegalArgumentException("Parque debe contener estaciones");
