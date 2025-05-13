@@ -1,39 +1,42 @@
 package model;
 
 import java.util.*;
-
-import org.openstreetmap.gui.jmapviewer.Coordinate;
+import algorithm.Kruskal;
+import algorithm.Prim;
 
 public class Park {
     private HashMap<Integer, Station> stations;
-    private int stationIndex;
     private Graph graph;
 
     public Park(List<Station> stationList, List<Edge> edgeList) {
-        //verifyValidParameters(stationList, edgeList);
+        verifyValidParameters(stationList, edgeList);
         stations = new HashMap<>();
-        stationIndex = 0;
-        
         for (Station s : stationList) {
-            stations.put(stationIndex, s); 
-            stationIndex++;
+            stations.put(s.getNodeIndex(), s);
         }
-        
-        graph = new Graph(stationIndex);
+        graph = new Graph(stations.size());
         for (Edge e : edgeList) {
             graph.addEdge(e.getFrom(), e.getTo(), e.getWeight());
         }
     }
 
-    public Station getStationData(int index) {
-        if (!stations.containsKey(index)) {
+    public Station getStationData(int x) {
+        if (!stations.containsKey(x)) {
             throw new IllegalArgumentException("Estación no encontrada");
         }
-        return stations.get(index);
+        return stations.get(x);
     }
 
     public Graph getGraph() {
         return this.graph;
+    }
+
+    public List<Edge> doMSTWithKruskal() {
+        return Kruskal.getMST(this.graph);
+    }
+
+    public List<Edge> doMSTWithPrim() {
+        return Prim.getMST(this.graph, 0);
     }
     
     public int calculateEnviromentalDamage(List<Edge> pathData) {
@@ -51,44 +54,5 @@ public class Park {
             throw new IllegalArgumentException("Grafo debe tener aristas para resolver Sendero Minimo");
         }
     }
-
-	public void addStation(String name, Coordinate coordinate) {
-		Station station = new Station(coordinate.getLat(),coordinate.getLon(),stationIndex, name);
-		this.stations.put(stationIndex, station);
-		this.graph.addNode();
-		stationIndex++;
-	}
-
-	public boolean availableCoordinate(Coordinate coordinate) {
-		double Xcoord = coordinate.getLat();
-		double Ycoord = coordinate.getLon();
-		for (Station s : stations.values()) {
-            if(s.getXCoordinate() == Xcoord && s.getYCoordinate() == Ycoord) {
-            	return false;
-            }
-        }
-		return true;
-	}
-
-	public HashMap<Integer, Station> getStations() {
-		return this.stations;
-	}
-
-	public void addPath(int from, int to, int weight) {
-		 if (!stations.containsKey(from) || !stations.containsKey(to)) {
-		        throw new IllegalArgumentException("Una o ambas estaciones no existen. from=" + from + ", to=" + to);
-		    }
-
-		this.graph.addEdge(from,to,weight);
-	
-	}
-	public int calculateEnviromentalDamage() {
-        int result = 0;
-        for (Edge e : graph.getAllEdges()) {
-            result += e.getWeight();
-        }
-        return result;
-    }
-	
 }
 

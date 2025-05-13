@@ -13,15 +13,14 @@ public class MapDataLoader {
 	
 	public MapDataLoader(String route) {
 		reader = new FileReader(route);
+		reader.readFile();
+		park = new Park(reader.getStations(), reader.getEdges());
+
 	}
     
-	public void loadPark(String route){
-		
-		if(reader.verifyFile(route)) {
-			reader.readFile();
-			park = new Park(reader.getStations(), reader.getEdges());
-		}
-	}
+	 public Station getStationData(int x) {
+	        return park.getStationData(x);
+	    }
 	
 	public List<Station> getStations() {
         return reader.getStations();
@@ -42,12 +41,4 @@ public class MapDataLoader {
     public int getEnviromentalDamage(List<Edge> aux) {
     	return park.calculateEnviromentalDamage(aux);
     }
-    
-    public Object getMessage() {
-		return this.reader.getMessage();
-	}
-
-	public Park getPark() {
-		return this.park;
-	}
 }

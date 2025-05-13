@@ -1,59 +1,43 @@
 package controller;
 
 import java.util.List;
-import model.Edge;
-import model.Graph;
-import model.Station;
-import model.Park;
+
+import org.openstreetmap.gui.jmapviewer.Coordinate;
+import org.openstreetmap.gui.jmapviewer.interfaces.ICoordinate;
+
+import FileReader.FileReader;
 import algorithm.AlgorithmTimer;
-import algorithm.Kruskal;
-import algorithm.Prim;
+import model.Edge;
+import model.Park;
+import model.Station;
 
 public class AlgorithmController {
-    
 
-    private AlgorithmTimer timer;
-
-    public AlgorithmController() {
-  
-        this.timer = new AlgorithmTimer();
-    }
-
-    public Graph doMSTWithKruskal(Graph graph) {
-    	
-        List<Edge> mstEdges = Kruskal.getMST(graph);
-        Graph mstGraph = new Graph(graph.size());
-        for(Edge e : mstEdges) {
-        	mstGraph.addEdge(e.getFrom(), e.getTo(), e.getWeight());
-        }
-        
-        return mstGraph;
-    }
-
-    public Graph doMSTWithPrim(Graph graph) {
-
-        List<Edge> mstEdges = Prim.getMST(graph, 0);
-        Graph mstGraph = new Graph(graph.size());
-        for(Edge e : mstEdges) {
-        	mstGraph.addEdge(e.getFrom(), e.getTo(), e.getWeight());
-        }
-        
-        return mstGraph;
-    }
-
-    public int calculateEnvironmentalDamage(List<Edge> path) {
-        int total = 0;
-        for (Edge e : path) total += e.getWeight();
-        return total;
-    }
-
+	private AlgorithmTimer timer;
+	private Park park;
+	private FileReader reader;
 	
-	public double getKruskalTime(Graph graph) {
-		return timer.getKruskalTime(graph);
+	public AlgorithmController(String route) {
+		reader = new FileReader(route);
+		reader.readFile();
+		park = new Park(reader.getStations(), reader.getEdges());
+		timer = new AlgorithmTimer();
+	}
+
+	public List<Edge> doMSTWithKruskal() {
+	        return park.doMSTWithKruskal();
+	    }
+	
+    public List<Edge> doMSTWithPrim() {
+        return park.doMSTWithPrim();
+    }
+	
+	public double getKruskalTime() {
+		return timer.getKruskalTime(park.getGraph());
 	}
 	
-	public double getPrimTime(Graph graph) {
-		return timer.getPrimTime(graph);
+	public double getPrimTime() {
+		return timer.getPrimTime(park.getGraph());
 	}
 
 }
