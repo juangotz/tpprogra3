@@ -10,18 +10,6 @@ import org.openstreetmap.gui.jmapviewer.Coordinate;
 
 public class ParkTest {
 	
-//	@Test(expected = IllegalArgumentException.class)
-//	 public void createParkWithNoStations() {
-//		 Park p = new Park(new ArrayList<Station>(), new ArrayList<Edge>());
-//		
-//	 }
-//	
-//	 @Test (expected = IllegalArgumentException.class)
-//	 public void createParkWithNoEdges() {
-//		 Park p = generateNoEdgesPark();
-//	 }
-//	
-	
 	@Test(expected = IllegalArgumentException.class)
 	 public void testStationNotFound() {
 		 Park p = generateTemplatePark();
@@ -49,27 +37,23 @@ public class ParkTest {
 		 assertFalse(p.availableCoordinate(coord));
 	 }
 	 
-//	 @Test
-//	 public void successfulKruskal() {
-//		 Park p = generateTemplatePark();
-//		 List<Edge> mst = p.doMSTWithKruskal();
-//		 List<Edge> expected = new ArrayList<>();
-//		 expected.add(new Edge(1,2,3));
-//		 expected.add(new Edge(2,3,4));
-//		 expected.add(new Edge(0,1,10));
-//		 assertTrue(compareLists(mst, expected));
-//	 }
-//	 
-//	 @Test
-//	 public void successfulPrim() {
-//		 Park p = generateTemplatePark();
-//		 List<Edge> mst = p.doMSTWithPrim();
-//		 List<Edge> expected = new ArrayList<>();
-//		 expected.add(new Edge(0,1,10));
-//		 expected.add(new Edge(1,2,3));
-//		 expected.add(new Edge(2,3,4));
-//		 assertTrue(compareLists(mst, expected));
-//	 }
+	 @Test
+	 public void connectedPark() {
+		 Park p = generateTemplatePark();
+		 assertTrue(p.isGraphConnected());
+	 }
+	 
+	 @Test
+	 public void disconnectedPark() {
+		 Park p = generatePathlessPark();
+		 assertFalse(p.isGraphConnected());
+	 }
+	 
+	 @Test
+	 public void connectedOneStationPark() {
+		 Park p = generateOneStationPark();
+		 assertTrue(p.isGraphConnected());
+	 }
 
 	 
 	private Park generateTemplatePark() {
@@ -94,7 +78,7 @@ public class ParkTest {
 		return new Park(stations, edges);
 	}
 	
-	private Park generateNoEdgesPark() {
+	private Park generatePathlessPark() {
 		ArrayList<Station> stations = new ArrayList<Station>();
 		ArrayList<Edge> edges = new ArrayList<Edge>();
 		Station a = new Station (-34.521, -58.7008, 0, "A");
@@ -108,20 +92,13 @@ public class ParkTest {
 		return new Park(stations, edges);
 	}
 	
-	private boolean compareLists(List<Edge> mst, List<Edge> expected) {
-		if (expected.size()!=mst.size())
-			return false;
-		for (int index = 0; index < mst.size();index++) {
-			
-			if(!equalInts(mst.get(index).getFrom(),expected.get(index).getFrom())
-					|| !equalInts(mst.get(index).getTo(),expected.get(index).getTo())
-					|| !equalInts(mst.get(index).getWeight(),expected.get(index).getWeight())) {
-				return false;
-			}
-		}
-		return true;
+	private Park generateOneStationPark() {
+		ArrayList<Station> stations = new ArrayList<Station>();
+		ArrayList<Edge> edges = new ArrayList<Edge>();
+		Station a = new Station (-34.521, -58.7008, 0, "A");
+		stations.add(a);
+		return new Park(stations, edges);
 	}
-	private boolean equalInts(int a, int b) {
-		return a==b;
-	}
+	
+	
 }

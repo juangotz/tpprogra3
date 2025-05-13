@@ -36,6 +36,10 @@ public class Park {
         return this.graph;
     }
     
+    public boolean isGraphConnected() {
+    	return graph.getAllEdges().size() == stations.size() -1 || graph.getAllEdges().size() == stations.size();
+    }
+    
     public int calculateEnviromentalDamage(List<Edge> pathData) {
     	int result = 0;
     	for (Edge e : pathData) {

@@ -54,6 +54,10 @@ public class ParkController {
 	public Graph getGraph() {
 	    return park.getGraph();
 	}
+	
+	public boolean isParkConnected() {
+		return park.isGraphConnected();
+	}
 
 	public void addNewPath(int from, int to, int weight) {
 		this.park.addPath(from, to, weight);

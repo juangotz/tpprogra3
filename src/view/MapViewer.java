@@ -182,6 +182,7 @@ public class MapViewer
 				}else {
 					drawer.clearMap();
 					PController.addNewParkFromFile(loader.getPark());
+					_map.setDisplayPosition(new Coordinate(loader.getFocusCoordinateLat(),loader.getFocusCoordinateLon()), 15);
 					
 					drawer.drawPark(PController.getPark());
 					kruskalButton.setEnabled(true);
@@ -224,47 +225,47 @@ public class MapViewer
 		
 		kruskalButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				drawer.clearMap();
-				Graph mstGraph = AController.doMSTWithKruskal(PController.getGraph());
-				
-				double time = AController.getKruskalTime(mstGraph);
-				List<Station> originalStations = PController.getStationList(); 
-				PController.removePark();
-				PController.createNewParkFromGraph(mstGraph,originalStations);
-				
-				drawer.drawPark(PController.getPark());
-				int ed = PController.calculateEnviromentalDamage();
-				placeAlgorithmSummaryOnScreen(time,ed);
+				if (PController.isParkConnected()) {
+					drawer.clearMap();
+					Graph mstGraph = AController.doMSTWithKruskal(PController.getGraph());
+					
+					double time = AController.getKruskalTime(mstGraph);
+					List<Station> originalStations = PController.getStationList(); 
+					PController.removePark();
+					PController.createNewParkFromGraph(mstGraph,originalStations);
+					
+					drawer.drawPark(PController.getPark());
+					int ed = PController.calculateEnviromentalDamage();
+					placeAlgorithmSummaryOnScreen(time,ed);
+				} else {
+					JOptionPane.showMessageDialog(_map, "Todas las estaciones deben estar conectadas", "ERROR", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 			}
 		});
 		
 		primButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				drawer.clearMap();
-				Graph mstGraph = AController.doMSTWithPrim(PController.getGraph());
-				
-				double time = AController.getKruskalTime(mstGraph);
-				List<Station> originalStations = PController.getStationList(); 
-				PController.removePark();
-				PController.createNewParkFromGraph(mstGraph,originalStations);
-				
-				drawer.drawPark(PController.getPark());
-				int ed = PController.calculateEnviromentalDamage();
-				placeAlgorithmSummaryOnScreen(time,ed);
+				if (PController.isParkConnected()) {
+					drawer.clearMap();
+					Graph mstGraph = AController.doMSTWithPrim(PController.getGraph());
+					
+					double time = AController.getKruskalTime(mstGraph);
+					List<Station> originalStations = PController.getStationList(); 
+					PController.removePark();
+					PController.createNewParkFromGraph(mstGraph,originalStations);
+					
+					drawer.drawPark(PController.getPark());
+					int ed = PController.calculateEnviromentalDamage();
+					placeAlgorithmSummaryOnScreen(time,ed);
+				} else {
+					JOptionPane.showMessageDialog(_map, "Todas las estaciones deben estar conectadas", "ERROR", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 				
 			}
 		});
 
-	
-		
-		/*
-		//Hacemos Kruskal y Prim de antemano por temas del compilador de Java.
-		doMSTwithKruskal();
-		clearMap();
-		doMSTwithPrim();
-		clearMap();
-		*/
 	}
 	private JLabel createLabel(String text, int x, int y, int width, int height, Font font, JPanel panel) {
 	    JLabel label = new JLabel(text);
