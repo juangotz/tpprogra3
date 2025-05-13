@@ -35,7 +35,7 @@ public class EdgeEditingTest {
 	}
 
 	@Test
-	public void testExistingEdg() {
+	public void testExistingEdge() {
 		Graph Graph = new Graph(5);
 		Graph.addEdge(2, 3, 0);
 		assertTrue(Graph.edgeExists(2, 3));
