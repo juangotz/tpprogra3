@@ -89,6 +89,27 @@ public class Graph{
 	    verifyEdge(node);
 	    return neighbors.get(node);
 	}
+	
+	public List<Edge> getAllEdges() {
+		
+		Set<String> seen = new HashSet<>();
+		List<Edge> ret = new ArrayList<>();
+		
+		
+		for (int from = 0; from < neighbors.size(); from++) {
+            for (Edge edge : neighbors.get(from)) {
+            	
+                int to = edge.getTo();
+                String key = Math.min(from, to) + "-" + Math.max(from, to);
+                
+                if (!seen.contains(key)) {
+                    ret.add(edge);
+                    seen.add(key);
+                }
+            }
+        }
+		return ret;
+	}
 
 	private void verifyEdge(int i)
 	{
@@ -103,6 +124,10 @@ public class Graph{
 	{
 		if( i == j )
 			throw new IllegalArgumentException("No se permiten loops: (" + i + ", " + j + ")");
+	}
+
+	public void addNode() {
+		neighbors.add(new HashSet<>());
 	}
 	
 	

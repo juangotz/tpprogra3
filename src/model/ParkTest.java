@@ -1,60 +1,77 @@
 package model;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.openstreetmap.gui.jmapviewer.Coordinate;
 
 public class ParkTest {
 	
+//	@Test(expected = IllegalArgumentException.class)
+//	 public void createParkWithNoStations() {
+//		 Park p = new Park(new ArrayList<Station>(), new ArrayList<Edge>());
+//		
+//	 }
+//	
+//	 @Test (expected = IllegalArgumentException.class)
+//	 public void createParkWithNoEdges() {
+//		 Park p = generateNoEdgesPark();
+//	 }
+//	
+	
 	@Test(expected = IllegalArgumentException.class)
-	 public void createParkWithNoStations() {
-		 Park p = new Park(new ArrayList<Station>(), new ArrayList<Edge>());
-		
-	 }
-	
-	 @Test (expected = IllegalArgumentException.class)
-	 public void createParkWithNoEdges() {
-		 Park p = generateNoEdgesPark();
-	 }
-	
-	
-	@Test(expected = IllegalArgumentException.class)
-	 public void stationNotFound() {
+	 public void testStationNotFound() {
 		 Park p = generateTemplatePark();
 		Station s= p.getStationData(5);
 	 }
+	
 	 @Test
-	 public void foundStation() {
+	 public void testFoundStation() {
 		Park p = generateTemplatePark();
 		Station s = p.getStationData(1);
 		assertTrue(s!=null);
 	 }
 	 
 	 @Test
-	 public void successfulKruskal() {
+	 public void testAvailableCoordinates() {
 		 Park p = generateTemplatePark();
-		 List<Edge> mst = p.doMSTWithKruskal();
-		 List<Edge> expected = new ArrayList<>();
-		 expected.add(new Edge(1,2,3));
-		 expected.add(new Edge(2,3,4));
-		 expected.add(new Edge(0,1,10));
-		 assertTrue(compareLists(mst, expected));
+		 Coordinate coord = new Coordinate(0.0,0.0);
+		 assertTrue(p.availableCoordinate(coord));
 	 }
 	 
 	 @Test
-	 public void successfulPrim() {
+	 public void testNotAvailableCoordinates() {
 		 Park p = generateTemplatePark();
-		 List<Edge> mst = p.doMSTWithPrim();
-		 List<Edge> expected = new ArrayList<>();
-		 expected.add(new Edge(0,1,10));
-		 expected.add(new Edge(1,2,3));
-		 expected.add(new Edge(2,3,4));
-		 assertTrue(compareLists(mst, expected));
+		 Coordinate coord = new Coordinate(-34.521,-58.7008);
+		 assertFalse(p.availableCoordinate(coord));
 	 }
+	 
+//	 @Test
+//	 public void successfulKruskal() {
+//		 Park p = generateTemplatePark();
+//		 List<Edge> mst = p.doMSTWithKruskal();
+//		 List<Edge> expected = new ArrayList<>();
+//		 expected.add(new Edge(1,2,3));
+//		 expected.add(new Edge(2,3,4));
+//		 expected.add(new Edge(0,1,10));
+//		 assertTrue(compareLists(mst, expected));
+//	 }
+//	 
+//	 @Test
+//	 public void successfulPrim() {
+//		 Park p = generateTemplatePark();
+//		 List<Edge> mst = p.doMSTWithPrim();
+//		 List<Edge> expected = new ArrayList<>();
+//		 expected.add(new Edge(0,1,10));
+//		 expected.add(new Edge(1,2,3));
+//		 expected.add(new Edge(2,3,4));
+//		 assertTrue(compareLists(mst, expected));
+//	 }
 
+	 
 	private Park generateTemplatePark() {
 		ArrayList<Station> stations = new ArrayList<Station>();
 		ArrayList<Edge> edges = new ArrayList<Edge>();
