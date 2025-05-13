@@ -1,64 +1,61 @@
 package view;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
-import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
-import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
-import org.openstreetmap.gui.jmapviewer.interfaces.ICoordinate;
 
 import controller.AlgorithmController;
-import controller.FileVerificationController;
 import controller.MapDataLoader;
-import model.Edge;
-import model.Park;
+import controller.ParkController;
+import model.Graph;
 import model.Station;
 
 import javax.swing.JButton;
-
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.List;
+import java.awt.event.ActionEvent;
 
 import javax.swing.JTextField;
 import java.awt.Font;
-import javax.swing.JTextArea;
 import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 
 public class MapViewer 
 {
 	private JFrame frame;
 	private JPanel mapPanel;
 	private JPanel controlPanel;
+	private JPanel stationNamePanel;
 	private JMapViewer _map;
 	
 	private JTextField txtTimer;
-	private JTextField txtEnviroment;
+	private JTextField txtFrom;
+	private JTextField txtTo;
+	private JTextField txtWeight;
+	private JTextField txtAddress;
+	private JTextField txtEnvironment;
 	
 	private JButton primButton;
 	private JButton kruskalButton;
-	private JButton restablishButton;
+	private JButton clearButton;
 	private JButton loadButton;
-	private JTextField fileRoute;
+	private JButton loadPathButton;
 	
 	private boolean arePathsDrawn;
-	private String loadErrorMessage;
 	
-	private AlgorithmController controller;
-	private MapDataLoader loader;
+	private AlgorithmController AController;
+	private ParkController PController;
 	private MapDrawer drawer;
+	private MapDataLoader loader;
+	private String inputStationName;
+
 
 	/**
 	 * Launch the application.
@@ -91,148 +88,183 @@ public class MapViewer
 	 */
 	private void initialize() 
 	{
-		
-		
 		frame = new JFrame("Generador de senderos con mínimo impacto ambiental");
-		frame.setBounds(100, 100, 800, 500);
+		frame.setBounds(100, 100, 1080, 720);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		
-		
-		
-		
+
 		mapPanel = new JPanel();
-		mapPanel.setBounds(10, 10, 430, 445);
+		mapPanel.setBounds(10, 10, 720, 670);
 		frame.getContentPane().add(mapPanel);
 		
+		_map = new JMapViewer();
+		_map.setDisplayPosition(new Coordinate(-40.83333333,-71.61666667), 15);
+		_map.setSize(720, 670); 
+		mapPanel.add(_map);
+
 		controlPanel = new JPanel();
-		controlPanel.setBounds(456, 10, 320, 445);
+		controlPanel.setBounds(740, 10, 320, 670);
 		frame.getContentPane().add(controlPanel);		
 		controlPanel.setLayout(null);
+
+		stationNamePanel = new JPanel();
+		stationNamePanel.setBounds(10, 10, 100, 70);
+		stationNamePanel.setVisible(true);
+		frame.getContentPane().add(stationNamePanel);
 		
+		kruskalButton = createButton("Opción 1", 0, 280, 195, 30, controlPanel);
+		kruskalButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		kruskalButton.setEnabled(false);
+
+		primButton = createButton("Opción 2", 0, 330, 195, 30, controlPanel);
+		primButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		primButton.setEnabled(false);
+
+		clearButton = createButton("Borrar Mapa", 0, 505, 195, 30, controlPanel);
+		clearButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
+
+		loadButton = createButton("Cargar", 195, 195, 85, 25, controlPanel);
+		loadButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
+
+		loadPathButton = createButton("Cargar Sendero", 80, 125, 130, 25, controlPanel);
+		loadPathButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
+
+		txtTimer = createTextField(0, 380, 195, 40, controlPanel);
+		txtTimer.setEditable(false);
+		txtTimer.setVisible(false);
+		txtTimer.setFont(new Font("Tahoma", Font.BOLD, 12));
+
+		txtFrom = createTextField(0, 90, 90, 25, controlPanel);
+		txtTo = createTextField(100, 90, 90, 25, controlPanel);
+		txtWeight = createTextField(200, 90, 90, 25, controlPanel);
+		txtAddress = createTextField(0, 195, 180, 25, controlPanel);
+		txtAddress.setText("src/FileReader/mapa1.xml");
 		
-		//Mapa y su foco.
-		_map = new JMapViewer();
-		_map.setDisplayPosition(new Coordinate(-38.416097, -63.616672), 4);
-		mapPanel.add(_map);
+		txtEnvironment = createTextField(0, 430, 195, 40, controlPanel);
+		txtEnvironment.setEditable(false);
+		txtEnvironment.setFont(new Font("Tahoma", Font.BOLD, 12));
+		txtEnvironment.setVisible(false);
+		
+		JLabel lblInstructions = createLabel("1)Cliquee el mapa para las coordenadas", 0, 15, 270, 25, new Font("Tahoma", Font.BOLD, 12), controlPanel);
+		JLabel lblGenerateTrails = createLabel("Generar Senderos Óptimos:", 0, 250, 290, 25, new Font("Tahoma", Font.BOLD, 12), controlPanel);
+		JLabel lblAddEdge = createLabel("2)Agregar Sendero:", 0, 50, 150, 20, new Font("Tahoma", Font.BOLD, 12), controlPanel);
+		JLabel lblFrom = createLabel("Estación A", 0, 70, 80, 20, new Font("Tahoma", Font.PLAIN, 12), controlPanel);
+		JLabel lblTo = createLabel("Estación B", 100, 70, 80, 20, new Font("Tahoma", Font.PLAIN, 12), controlPanel);
+		JLabel lblWeight = createLabel("Impacto ambiental", 200, 70, 110, 20, new Font("Tahoma", Font.PLAIN, 12), controlPanel);
+		JLabel lblAddPark = createLabel("Agregar parque mediante archivo:", 0, 165, 250, 25, new Font("Tahoma", Font.BOLD, 12), controlPanel);
+
 		drawer = new MapDrawer(_map);
+		PController = new ParkController();
 		
-		//Carga el archivo y el grafo original
-		fileRoute = createTextField(21, 40, 167, 20, controlPanel);
-		fileRoute.setText("src/FileReader/mapa1.xml");
-		
-		loadButton = createButton("Cargar", 215, 40, 85, 20, controlPanel);;
+		_map.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		        Coordinate clickedCoord = (Coordinate) _map.getPosition(e.getPoint());
+		        showStationNamePanel(clickedCoord);
+		        kruskalButton.setEnabled(true);
+		        primButton.setEnabled(true);
+		    }
+		});
 		
 		loadButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String address = fileRoute.getText();
+				
+				String address = txtAddress.getText();
+				loader = new MapDataLoader(address);
 				if (address.isEmpty()) {
 					JOptionPane.showMessageDialog(_map, "No se puede encontrar ruta", "ERROR", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				if (!verifyFile(address)) {
-					JOptionPane.showMessageDialog(_map, loadErrorMessage, "ERROR", JOptionPane.ERROR_MESSAGE);
+				loader.loadPark(address);
+				if (loader.getPark() == null) {
+					JOptionPane.showMessageDialog(_map, loader.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
 					return;
+				}else {
+					drawer.clearMap();
+					PController.addNewParkFromFile(loader.getPark());
+					
+					drawer.drawPark(PController.getPark());
+					kruskalButton.setEnabled(true);
+				    primButton.setEnabled(true);
+					kruskalButton.setVisible(true);
+					primButton.setVisible(true);
+					
+					AController = new AlgorithmController();
 				}
-				loader = new MapDataLoader(address);
-				controller = new AlgorithmController(address);
-				drawer.setController(loader);
-				List<Edge> aux = loader.getEdges();
-				_map.setDisplayPosition(new Coordinate(loader.getFocusCoordinateLat(),loader.getFocusCoordinateLon()), 15);
-				drawer.placeStationsOnMap(aux);
-				drawer.placePathsOnMap(aux);
-				kruskalButton.setVisible(true);
-				primButton.setVisible(true);
-				restablishButton.setVisible(true);
+				
+				
 			}
 		});
 		
-		//Boton para hacer AGM con Kruskal
-		
-		kruskalButton = createButton("Opción 1",62, 115, 195, 20,controlPanel);
-		kruskalButton.setVisible(false);	
-		kruskalButton.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent arg0) 
-			{
-				if(!arePathsDrawn) {
-					
-					List<Edge> aux = controller.doMSTWithKruskal();
-					double time = controller.getKruskalTime();
-					int average = loader.getEnviromentalDamage(aux);
-					
-					_map.removeAllMapPolygons();
-					drawer.placePathsOnMap(aux);
-					
-					arePathsDrawn = true;
-					placeAlgorithmTimeOnScreen(time);
-					placeEnviromentalDamageOnScreen(average);
-					
-				} else {
-					JOptionPane.showMessageDialog(_map, "Caminos ya estan dibujados. Borrar primero.", "ERROR", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
-		
-		//Boton para hacer AGM con Prim
-		
-		primButton = createButton("Opción 2",62, 145, 195, 20,controlPanel);
-		primButton.setVisible(false);
-		primButton.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent arg0) 
-			{
-				if(!arePathsDrawn) {
-					
-					List<Edge> aux = controller.doMSTWithPrim();
-					double time = controller.getPrimTime();
-					int average = loader.getEnviromentalDamage(aux);
-					
-					_map.removeAllMapPolygons();
-					drawer.placePathsOnMap(aux);
-					
-					arePathsDrawn = true;
-					placeAlgorithmTimeOnScreen(time);
-					placeEnviromentalDamageOnScreen(average);
-					
-				} else {
-					JOptionPane.showMessageDialog(_map, "Caminos ya estan dibujados. Borrar primero.", "ERROR", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
-		
-		//Boton para Borrar mapa.
-		restablishButton = createButton("Restablecer Mapa",62, 175, 195, 20,controlPanel);
-		restablishButton.setVisible(false);
-		restablishButton.addActionListener(new ActionListener() {
+		loadPathButton.addActionListener(new ActionListener() {
+			int from;
+			int to;
+			int weight;
+			
 			public void actionPerformed(ActionEvent e) {
-				if(!arePathsDrawn) {
-					JOptionPane.showMessageDialog(_map, "Senderos no pueden restablecerse.", "ERROR", JOptionPane.ERROR_MESSAGE);
-				} else {
-					drawer.restablishOriginalPaths();
-					txtTimer.setVisible(false);
-					txtEnviroment.setVisible(false);
-					arePathsDrawn = false;
-				}
+				from = Integer.parseInt(txtFrom.getText());
+				to = Integer.parseInt(txtTo.getText());
+				weight = Integer.parseInt(txtWeight.getText());
+				PController.addNewPath(from-1, to-1, weight);
+				drawer.drawPark(PController.getPark());
 			}
 		});
 		
-		// Etiqueta de texto del tiempo
-		txtTimer = createTextField(62, 260, 195, 40,controlPanel);
-		txtTimer.setEditable(false);
-		txtTimer.setFont(new Font("Tahoma", Font.BOLD, 9));
-		txtTimer.setText("Tiempo Total Algoritmo: x sec");
-		txtTimer.setVisible(false);
+		clearButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				drawer.clearMap();
+				if (PController.parkExists()) {
+					PController.removePark();
+				}
+				
+				primButton.setEnabled(false);
+				kruskalButton.setEnabled(false);
+			}
+		});
 		
-		JLabel lblGenerateTrails = createLabel("Generar Senderos con \r\nminimo impacto ambiental:",20, 85, 290, 20,new Font("Tahoma", Font.BOLD, 10),controlPanel);	
-		JLabel lblAddPark = createLabel("Agregar parque mediante archivo:",20, 10, 250, 20,new Font("Tahoma", Font.BOLD, 10),controlPanel);
+		kruskalButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				drawer.clearMap();
+				Graph mstGraph = AController.doMSTWithKruskal(PController.getGraph());
+				
+				double time = AController.getKruskalTime(mstGraph);
+				List<Station> originalStations = PController.getStationList(); 
+				PController.removePark();
+				PController.createNewParkFromGraph(mstGraph,originalStations);
+				
+				drawer.drawPark(PController.getPark());
+				int ed = PController.calculateEnviromentalDamage();
+				placeAlgorithmSummaryOnScreen(time,ed);
+			}
+		});
+		
+		primButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				drawer.clearMap();
+				Graph mstGraph = AController.doMSTWithPrim(PController.getGraph());
+				
+				double time = AController.getKruskalTime(mstGraph);
+				List<Station> originalStations = PController.getStationList(); 
+				PController.removePark();
+				PController.createNewParkFromGraph(mstGraph,originalStations);
+				
+				drawer.drawPark(PController.getPark());
+				int ed = PController.calculateEnviromentalDamage();
+				placeAlgorithmSummaryOnScreen(time,ed);
+				
+			}
+		});
 
+	
 		
-		txtEnviroment = createTextField(62, 210, 195, 40,controlPanel);
-		txtEnviroment.setEditable(false);
-		txtEnviroment.setFont(new Font("Tahoma", Font.BOLD, 9));
-		txtEnviroment.setText("Impacto Ambiental: Y");
-		txtEnviroment.setVisible(false);
+		/*
+		//Hacemos Kruskal y Prim de antemano por temas del compilador de Java.
+		doMSTwithKruskal();
+		clearMap();
+		doMSTwithPrim();
+		clearMap();
+		*/
 	}
 	private JLabel createLabel(String text, int x, int y, int width, int height, Font font, JPanel panel) {
 	    JLabel label = new JLabel(text);
@@ -256,30 +288,62 @@ public class MapViewer
 	    panel.add(textField);
 	    return textField;
 	}
-	
-	private void placeAlgorithmTimeOnScreen(Double time) {
-		txtTimer.setText("Tiempo Total Algoritmo: " + time + "secs.");
+	private void placeAlgorithmSummaryOnScreen(Double time, int ed) {
+		txtTimer.setText("    Tiempo Total: " + time + " segs.");
 		txtTimer.setVisible(true);
+		txtEnvironment.setText("   Impacto Ambiental: " + ed);
+		txtEnvironment.setVisible(true);
 		
 	}
 	
-	private void placeEnviromentalDamageOnScreen(int average) {
-		txtEnviroment.setText("Impacto Ambiental: " + average);
-		txtEnviroment.setVisible(true);
-		
-	}
-	
-	private boolean verifyFile(String route) {
-		FileVerificationController aux = new FileVerificationController(route);
-		if (!aux.verifyFileExists()) {
-			loadErrorMessage = "Archivo no existe";
-			return false;
-		}
-		if (!aux.verifyXmlFileType()) {
-			loadErrorMessage = "Archivo no es .xml";
-			return false;
-		}
-		return true;
+	private void showStationNamePanel(Coordinate coord) {
+
+	    mapPanel.setEnabled(false);
+	    controlPanel.setEnabled(false);
+
+	    JPanel overlayPanel = new JPanel();
+	    overlayPanel.setLayout(null);
+	    overlayPanel.setBackground(new Color(100, 100, 100));
+	    overlayPanel.setBounds(200, 200, frame.getWidth() / 2, frame.getHeight() / 2);
+
+	    JPanel inputPanel = new JPanel();
+	    inputPanel.setLayout(null);
+	    inputPanel.setBounds(75, 100, 400, 150);
+	    inputPanel.setBackground(Color.WHITE);
+	    
+	    JLabel label = createLabel("Nombre de la estación:", 20, 20, 200, 20, new Font("Arial", Font.PLAIN, 14), inputPanel);
+	    JTextField inputField = createTextField(20, 50, 360, 25,inputPanel);
+	    JButton aceptarButton = createButton("Aceptar", 70, 90, 100, 25, inputPanel);
+	    JButton cancelarButton = createButton("Cancelar", 220, 90, 100, 25, inputPanel);
+
+	    overlayPanel.add(inputPanel);
+	    frame.getLayeredPane().add(overlayPanel, JLayeredPane.MODAL_LAYER);
+	    frame.getLayeredPane().repaint();
+
+	    aceptarButton.addActionListener(e -> {
+	        inputStationName = inputField.getText();
+
+	        if (PController.parkExists()) {
+	            AController = new AlgorithmController();
+	            PController.addNewStation(inputStationName, coord);
+	        } else {
+	            PController.createNewPark();
+	            AController = new AlgorithmController();
+	            PController.addNewStation(inputStationName, coord);
+	            
+	            //hago kruskal y prim por primera vez para sacar el valor erroneo del principio
+	       
+	        }
+
+	        drawer.drawPark(PController.getPark());
+	        frame.getLayeredPane().remove(overlayPanel);
+	        frame.getLayeredPane().repaint();
+	    });
+
+	    cancelarButton.addActionListener(e -> {
+	        frame.getLayeredPane().remove(overlayPanel);
+	        frame.getLayeredPane().repaint();
+	    });
 	}
 }
-	
+		
