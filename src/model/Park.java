@@ -50,8 +50,8 @@ public class Park {
         if (stationList.isEmpty()) {
             throw new IllegalArgumentException("Parque debe contener estaciones");
         }
-        if (edgeList.isEmpty()) {
-            throw new IllegalArgumentException("Grafo debe ser conexo. Por ende, debe contener aristas");
+        if (edgeList.isEmpty() && stationList.size()!=1) {
+            throw new IllegalArgumentException("Grafo debe tener aristas para resolver Sendero Minimo");
         }
     }
 }

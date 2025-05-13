@@ -14,6 +14,7 @@ import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
 import org.openstreetmap.gui.jmapviewer.interfaces.ICoordinate;
 
 import controller.AlgorithmController;
+import controller.FileVerificationController;
 import controller.MapDataLoader;
 import model.Edge;
 import model.Park;
@@ -53,6 +54,7 @@ public class MapViewer
 	private JTextField fileRoute;
 	
 	private boolean arePathsDrawn;
+	private String loadErrorMessage;
 	
 	private AlgorithmController controller;
 	private MapDataLoader loader;
@@ -128,6 +130,10 @@ public class MapViewer
 					JOptionPane.showMessageDialog(_map, "No se puede encontrar ruta", "ERROR", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
+				if (!verifyFile(address)) {
+					JOptionPane.showMessageDialog(_map, loadErrorMessage, "ERROR", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 				loader = new MapDataLoader(address);
 				controller = new AlgorithmController(address);
 				drawer.setController(loader);
@@ -201,7 +207,7 @@ public class MapViewer
 		restablishButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!arePathsDrawn) {
-					JOptionPane.showMessageDialog(_map, "No existe camino para borrar.", "ERROR", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(_map, "Senderos no pueden restablecerse.", "ERROR", JOptionPane.ERROR_MESSAGE);
 				} else {
 					drawer.restablishOriginalPaths();
 					txtTimer.setVisible(false);
@@ -261,6 +267,19 @@ public class MapViewer
 		txtEnviroment.setText("Impacto Ambiental: " + average);
 		txtEnviroment.setVisible(true);
 		
+	}
+	
+	private boolean verifyFile(String route) {
+		FileVerificationController aux = new FileVerificationController(route);
+		if (!aux.verifyFileExists()) {
+			loadErrorMessage = "Archivo no existe";
+			return false;
+		}
+		if (!aux.verifyXmlFileType()) {
+			loadErrorMessage = "Archivo no es .xml";
+			return false;
+		}
+		return true;
 	}
 }
 	

@@ -16,7 +16,7 @@ public class ParkTest {
 	 }
 	
 	 @Test (expected = IllegalArgumentException.class)
-	 public void createParkWithNoEdges() {
+	 public void noEdgesMoreThanOneStationPark() {
 		 Park p = generateNoEdgesPark();
 	 }
 	
@@ -54,6 +54,21 @@ public class ParkTest {
 		 expected.add(new Edge(2,3,4));
 		 assertTrue(compareLists(mst, expected));
 	 }
+	 
+	 @Test
+	 public void kruskalOnSingleStationPark() {
+		 Park p = generateOneStationPark();
+		 List<Edge> mst = p.doMSTWithKruskal();
+		 System.out.println(mst.size());
+		 assertTrue(mst.isEmpty());
+	 }
+	 
+	 public void primOnSingleStationPark() {
+		 Park p = generateOneStationPark();
+		 List<Edge> mst = p.doMSTWithPrim();
+		 System.out.println(mst.size());
+		 assertTrue(mst.isEmpty());
+	 }
 
 	private Park generateTemplatePark() {
 		ArrayList<Station> stations = new ArrayList<Station>();
@@ -88,6 +103,14 @@ public class ParkTest {
 		stations.add(b);
 		stations.add(c);
 		stations.add(d);
+		return new Park(stations, edges);
+	}
+	
+	private Park generateOneStationPark() {
+		ArrayList<Station> stations = new ArrayList<Station>();
+		ArrayList<Edge> edges = new ArrayList<Edge>();
+		Station a = new Station (-34.521, -58.7008, 0, "A");
+		stations.add(a);
 		return new Park(stations, edges);
 	}
 	

@@ -11,12 +11,18 @@ import model.Station;
 
 public class FileReader {
     private String route;
+    private FileVerificator verificator;
     private List<Station> stations;
     private List<Edge> edges;
     private double focusCoordinateLat;
     private double focusCoordinateLon;
 
     public FileReader(String route) {
+    	verificator = new FileVerificator();
+    	if (!verificator.verifyFileExists(route))
+    		throw new IllegalArgumentException("Archivo no encontrado!");
+    	if (!verificator.verifyXmlFileType(route))
+    		throw new IllegalArgumentException("Archivo debe ser .xml!");
         this.route = route;
         this.stations = new ArrayList<>();
         this.edges = new ArrayList<>();
