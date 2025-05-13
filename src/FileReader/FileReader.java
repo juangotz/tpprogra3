@@ -19,11 +19,6 @@ public class FileReader {
     private double focusCoordinateLon;
 
     public FileReader(String route) {
- 
-//    	if (!verifyFileExists(route))
-//    		throw new IllegalArgumentException("Archivo no encontrado!");
-//    	if (!verifyXmlFileType(route))
-//    		throw new IllegalArgumentException("Archivo debe ser .xml!");
         this.route = route;
         this.stations = new ArrayList<>();
         this.edges = new ArrayList<>();
