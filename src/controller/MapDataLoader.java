@@ -15,12 +15,13 @@ public class MapDataLoader {
 		reader = new FileReader(route);
 	}
     
-	public void loadPark(String route){
+	public Park loadPark(String route){
 		
 		if(reader.verifyFile(route)) {
 			reader.readFile();
 			park = new Park(reader.getStations(), reader.getEdges());
 		}
+		return park;
 	}
 	
 	public List<Station> getStations() {

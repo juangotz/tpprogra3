@@ -9,7 +9,6 @@ import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import controller.AlgorithmController;
-import controller.FileController;
 import controller.MapDataLoader;
 import controller.ParkController;
 import model.Graph;
@@ -217,6 +216,9 @@ public class MapViewer
 				if (PController.parkExists()) {
 					PController.removePark();
 				}
+				
+				primButton.setEnabled(false);
+				kruskalButton.setEnabled(false);
 			}
 		});
 		
