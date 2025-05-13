@@ -331,7 +331,6 @@ public class MapViewer
 	            AController = new AlgorithmController();
 	            PController.addNewStation(inputStationName, coord);
 	            
-	            //hago kruskal y prim por primera vez para sacar el valor erroneo del principio
 	       
 	        }
 

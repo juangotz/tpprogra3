@@ -3,6 +3,7 @@ package view;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
@@ -10,57 +11,51 @@ import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
 
-import controller.MapDataLoader;
 import model.Edge;
+import model.Park;
 import model.Station;
 
 public class MapDrawer {
 	
-	private MapDataLoader controller; 
 	private JMapViewer _map;
 
 	public MapDrawer(JMapViewer map) {
 		this._map = map;
 	}
-	
-	public void setController(MapDataLoader controller) {
-		this.controller = controller;
-	}
-	
-	protected void placeStationsOnMap(List<Edge> aux) {
-		ArrayList<Integer> addedStations = new ArrayList<Integer>();
-		for (Edge e : aux) {
-			if (!addedStations.contains(e.getFrom())) {
-				drawStationInMap(e.getFrom());
-				addedStations.add(e.getFrom());
-			}
-			if (!addedStations.contains(e.getTo())) {
-				drawStationInMap(e.getTo());
-				addedStations.add(e.getTo());
-			}
-		}
-		
-	}
-	
-	protected void drawStationInMap(int index) {
-		Station stationData = controller.getStationData(index);
-		Coordinate stationCoordinate = getCoordinateFromStation(stationData);
-		String stationName = stationData.getName();
-		_map.addMapMarker(new MapMarkerDot(stationName, stationCoordinate));
-	}
-	
-	protected void placePathsOnMap(List <Edge> dataEdges) {
-		for(Edge e : dataEdges) {
-			Station stationXData = controller.getStationData(e.getFrom());
-			Station stationYData = controller.getStationData(e.getTo());
-			ArrayList<Coordinate> stationsCoordinates = getCoordinatesForPolygon(stationXData, stationYData);
-			
-			MapPolygonImpl polygon = new MapPolygonImpl(stationsCoordinates);
-			_map.addMapPolygon(polygon);
-			setAppropiatePolygonColor(polygon, e.getWeight());
-		}
-		
-	}
+
+	 public void drawPark(Park park) {
+	        clearMap();
+	        drawStations(park.getStations());
+	        drawPaths(park);
+	    }
+
+	    private void drawStations(HashMap<Integer, Station> stations) {
+	        for (Station s : stations.values()) {
+	            Coordinate coord = new Coordinate(s.getXCoordinate(), s.getYCoordinate());
+	            String label = (s.getNodeIndex()+1) + ". " + s.getName();
+	            _map.addMapMarker(new MapMarkerDot(label, coord));
+	        }
+	        System.out.println("cantidad de estaciones: " + stations.size());
+	    }
+
+	    private void drawPaths( Park park) {
+	    	List<Edge> edges = park.getGraph().getAllEdges();
+	    	if(edges.size() != 0) {
+	    		for (Edge e : edges) {
+		            Station from = park.getStationData(e.getFrom());
+		            Station to = park.getStationData(e.getTo());
+		            ArrayList<Coordinate> coords = new ArrayList<>();
+		            coords.add(new Coordinate(from.getXCoordinate(), from.getYCoordinate()));
+		            coords.add(new Coordinate(to.getXCoordinate(), to.getYCoordinate()));
+		            coords.add(getMiddleCoordinate(coords.get(0), coords.get(1)));
+
+		            MapPolygonImpl polygon = new MapPolygonImpl(coords);
+		            _map.addMapPolygon(polygon);
+		            setAppropiatePolygonColor(polygon, e.getWeight());
+		        }
+	    	}
+	    	System.out.println("cantidad de senderos: " + edges.size());
+	    }
 
 	protected void setAppropiatePolygonColor(MapPolygonImpl polygon, int z) {
 		if (z>=1 && z<=3) {
@@ -111,12 +106,5 @@ public class MapDrawer {
 		_map.removeAllMapMarkers();
 		_map.removeAllMapPolygons();
 	}
-	
-	protected void restablishOriginalPaths() {
-		_map.removeAllMapPolygons();
-		List<Edge> aux = controller.getEdges();
-		placePathsOnMap(aux);
-	}
-
 	
 }

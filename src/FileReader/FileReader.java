@@ -11,18 +11,13 @@ import model.Station;
 
 public class FileReader {
     private String route;
-    private FileVerificator verificator;
+    private String loadErrorMessage;
     private List<Station> stations;
     private List<Edge> edges;
     private double focusCoordinateLat;
     private double focusCoordinateLon;
 
     public FileReader(String route) {
-    	verificator = new FileVerificator();
-    	if (!verificator.verifyFileExists(route))
-    		throw new IllegalArgumentException("Archivo no encontrado!");
-    	if (!verificator.verifyXmlFileType(route))
-    		throw new IllegalArgumentException("Archivo debe ser .xml!");
         this.route = route;
         this.stations = new ArrayList<>();
         this.edges = new ArrayList<>();
@@ -80,6 +75,35 @@ public class FileReader {
             e.printStackTrace();
         }
     }
+    
+    public boolean verifyFile(String route) {
+		if (!verifyFileExists(route)) {
+			loadErrorMessage = "Archivo no existe";
+			return false;
+		}
+		if (!verifyXmlFileType(route)) {
+			loadErrorMessage = "Archivo no es .xml";
+			return false;
+		}
+		return true;
+	}
+
+	private boolean verifyFileExists(String route) {
+		File f = new File(route);
+		return f.exists();
+	}
+	
+	private boolean verifyXmlFileType(String route) {
+		StringBuilder aux = new StringBuilder(route);
+		aux.delete(0, (route.length()-4));
+		String result = aux.toString();
+		return result.compareTo(".xml")==0;
+		
+	}
+	
+	public Object getMessage() {
+		return loadErrorMessage;
+	}
     
     public double getFocusCoordinateLat() {
         return focusCoordinateLat;
