@@ -66,7 +66,7 @@ public class ParkTest {
 		Edge ab = new Edge(0, 1, 10);
 		Edge cd = new Edge(2, 3, 4);
 		Edge bc = new Edge(1, 2, 3);
-		Edge ad = new Edge(0, 3, 19);
+		Edge ad = new Edge(0, 3, 9);
 		edges.add(ab);
 		edges.add(bc);
 		edges.add(ad);
