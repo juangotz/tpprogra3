@@ -50,7 +50,7 @@
         	<edge>
             		<from>1</from>
             		<to>3</to>
-            		<weight>15</weight>
+            		<weight>10</weight>
         	</edge>
         	<edge>
             		<from>2</from>

@@ -15,6 +15,7 @@ import model.Graph;
 import model.Station;
 
 import javax.swing.JButton;
+
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -48,7 +49,6 @@ public class MapViewer
 	private JButton loadButton;
 	private JButton loadPathButton;
 	
-	private boolean arePathsDrawn;
 	
 	private AlgorithmController AController;
 	private ParkController PController;
@@ -128,6 +128,7 @@ public class MapViewer
 
 		loadPathButton = createButton("Cargar Sendero", 80, 125, 130, 25, controlPanel);
 		loadPathButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		loadPathButton.setEnabled(false);
 
 		txtTimer = createTextField(0, 380, 195, 40, controlPanel);
 		txtTimer.setEditable(false);
@@ -135,8 +136,11 @@ public class MapViewer
 		txtTimer.setFont(new Font("Tahoma", Font.BOLD, 12));
 
 		txtFrom = createTextField(0, 90, 90, 25, controlPanel);
+		txtFrom.setEnabled(false);
 		txtTo = createTextField(100, 90, 90, 25, controlPanel);
+		txtTo.setEnabled(false);
 		txtWeight = createTextField(200, 90, 90, 25, controlPanel);
+		txtWeight.setEnabled(false);
 		txtAddress = createTextField(0, 195, 180, 25, controlPanel);
 		txtAddress.setText("src/FileReader/mapa1.xml");
 		
@@ -163,6 +167,10 @@ public class MapViewer
 		        showStationNamePanel(clickedCoord);
 		        kruskalButton.setEnabled(true);
 		        primButton.setEnabled(true);
+		        txtFrom.setEnabled(true);
+		        txtTo.setEnabled(true);
+		        txtWeight.setEnabled(true);
+		        loadPathButton.setEnabled(true);
 		    }
 		});
 		
@@ -187,9 +195,10 @@ public class MapViewer
 					drawer.drawPark(PController.getPark());
 					kruskalButton.setEnabled(true);
 				    primButton.setEnabled(true);
-					kruskalButton.setVisible(true);
-					primButton.setVisible(true);
-					
+				    txtFrom.setEnabled(true);
+			        txtTo.setEnabled(true);
+			        txtWeight.setEnabled(true);
+			        loadPathButton.setEnabled(true);
 					AController = new AlgorithmController();
 				}
 				
@@ -203,11 +212,16 @@ public class MapViewer
 			int weight;
 			
 			public void actionPerformed(ActionEvent e) {
+				try {
 				from = Integer.parseInt(txtFrom.getText());
 				to = Integer.parseInt(txtTo.getText());
 				weight = Integer.parseInt(txtWeight.getText());
 				PController.addNewPath(from-1, to-1, weight);
 				drawer.drawPark(PController.getPark());
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(_map, "Insertar valores validos por favor", "ERROR", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 			}
 		});
 		
@@ -220,6 +234,10 @@ public class MapViewer
 				
 				primButton.setEnabled(false);
 				kruskalButton.setEnabled(false);
+				txtFrom.setEnabled(false);
+		        txtTo.setEnabled(false);
+		        txtWeight.setEnabled(false);
+		        loadPathButton.setEnabled(false);
 			}
 		});
 		

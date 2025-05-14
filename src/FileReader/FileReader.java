@@ -88,12 +88,12 @@ public class FileReader {
 		return true;
 	}
 
-	private boolean verifyFileExists(String route) {
+	protected boolean verifyFileExists(String route) {
 		File f = new File(route);
 		return f.exists();
 	}
 	
-	private boolean verifyXmlFileType(String route) {
+	protected boolean verifyXmlFileType(String route) {
 		StringBuilder aux = new StringBuilder(route);
 		aux.delete(0, (route.length()-4));
 		String result = aux.toString();
