@@ -37,7 +37,7 @@ public class Park {
     }
     
     public boolean isGraphConnected() {
-    	return graph.getAllEdges().size() == stations.size() -1 || graph.getAllEdges().size() == stations.size();
+    	return graph.getAllEdges().size() >= stations.size() -1;
     }
     
     public int calculateEnviromentalDamage(List<Edge> pathData) {
@@ -46,14 +46,6 @@ public class Park {
     		result += e.getWeight();
     	}
     	return result;
-    }
-    private void verifyValidParameters(List<Station> stationList, List<Edge> edgeList) {
-        if (stationList.isEmpty()) {
-            throw new IllegalArgumentException("Parque debe contener estaciones");
-        }
-        if (edgeList.isEmpty()) {
-            throw new IllegalArgumentException("Grafo debe ser conexo. Por ende, debe contener aristas");
-        }
     }
 
 	public void addStation(String name, Coordinate coordinate) {
